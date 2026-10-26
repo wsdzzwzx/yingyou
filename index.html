@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>安全小卫士大闯关</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== 开始界面（平台分享页风格） ========== -->
+<section id="screen-start" class="screen">
+  <div class="hero-bg"></div>
+  <div class="hero-shade"></div>
+  <button id="tts-toggle-home" class="tts-toggle" type="button" aria-pressed="true">🔊 朗读开</button>
+  <div class="start-inner">
+    
+    <h1 class="game-title">安全小卫士大闯关</h1>
+    <p class="hero-meta">安全教育 · 短篇（5~10 分钟）</p>
+    <p class="hero-desc">安全吉祥物"安安"来到小学，带领主角在防火与防震演练中闯关。通过观察环境、做出选择、完成躲闪挑战，最终获得"安全小卫士"徽章，掌握关键的安全逃生知识。</p>
+    <div class="hero-stats">
+      <span class="hero-stat">🎬 <b>19</b> 个节点</span>
+      <span class="hero-stat">🏆 <b>8</b> 个结局</span>
+      <span class="hero-stat">👆 点击 / 滑动 / 长按 / 拖拽</span>
+      <span class="hero-stat">🧭 720° 全景环视</span>
+    </div>
+    <button id="btn-play" class="btn-play">▶ 开始游玩</button>
+    <div id="chapter-list" class="chapter-list"></div>
+    <div id="ending-summary" class="ending-summary"></div>
+    <p class="start-tip">建议横屏体验 · 视频与交互均在本地播放，不上传任何数据 · 断网可玩</p>
+  </div>
+</section>
+
+<!-- ========== 播放界面 ========== -->
+<section id="screen-player" class="screen hidden">
+  <header id="hud">
+    <button id="btn-home" class="hud-btn" title="回到首页">⌂ 首页</button>
+    <div id="hud-title">—</div>
+    <button id="tts-toggle-hud" class="hud-btn tts-toggle" type="button" data-compact aria-pressed="true" title="悬停文字即朗读">🔊</button>
+    <button id="btn-fullscreen" class="hud-btn" title="全屏">⛶ 全屏</button>
+  </header>
+
+  <div id="stage">
+    <video id="video" playsinline webkit-playsinline preload="auto"></video>
+    <div id="video-loading" class="vl-idle">
+      <div class="vl-ring"></div>
+      <div class="vl-text">视频加载中…</div>
+    </div>
+    <div id="pano" class="hidden"></div>
+    <div id="fx"><div id="fx-target" class="hidden"></div></div>
+    <div id="lookaround-hint" class="hidden">↔ 拖动画面环顾四周</div>
+    <div id="toast" class="hidden"></div>
+    <div id="overlay"></div>
+  </div>
+
+  <div id="rotate-hint">📱 建议横屏观看，体验更佳</div>
+</section>
+
+<!-- ========== 结局界面 ========== -->
+<section id="screen-ending" class="screen hidden">
+  <div id="ending-card" class="ending-card">
+    <div id="ending-icon" class="ending-icon">🏆</div>
+    <div id="ending-kind" class="ending-kind">结局达成</div>
+    <h2 id="ending-title">—</h2>
+    <p id="ending-message"></p>
+    <div id="ending-count" class="ending-count"></div>
+    <div class="ending-actions">
+      <button id="btn-retry-branch" class="btn btn-primary">↩ 从分歧点重新选择</button>
+      <button id="btn-restart" class="btn btn-ghost">⟲ 重新开始本章</button>
+      <button id="btn-to-home" class="btn btn-ghost">⌂ 返回首页</button>
+    </div>
+  </div>
+</section>
+
+<script src="js/story-data.js"></script>
+<script src="js/tts.js"></script>
+<script src="js/track.js"></script>
+<script src="js/pano720.js"></script>
+<script src="js/engine.js"></script>
+</body>
+</html>

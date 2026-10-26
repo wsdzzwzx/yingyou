@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安全教育互动影游 · 教师数据后台</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/vendor/element-plus.css">
+<style>
+  /* ============ 深蓝数据大屏主题 ============ */
+  :root{
+    --bg0:#04101b;
+    --bg1:#071a2b;
+    --panel:rgba(9,38,62,.62);
+    --panel-2:rgba(7,26,44,.72);
+    --line:rgba(45,158,214,.38);
+    --line-soft:rgba(45,158,214,.22);
+    --line-hot:rgba(105,232,255,.85);
+    --cyan:#45e0ff;
+    --cyan-2:#7fd8f7;
+    --blue:#2f86ff;
+    --text:#cfe6f7;
+    --text-hi:#eaf9ff;
+    --dim:#7ea3bf;
+    --red:#ff6b5e;
+    --green:#2fe08a;
+    --mono:"Consolas","DIN Alternate","Menlo",monospace;
+
+    /* Element Plus 变量覆盖 */
+    --el-bg-color:#0a2136;
+    --el-bg-color-overlay:#0b2439;
+    --el-bg-color-page:#04101b;
+    --el-text-color-primary:#d7ecff;
+    --el-text-color-regular:#b6d5ea;
+    --el-text-color-secondary:#7ea3bf;
+    --el-text-color-placeholder:#5b7f9b;
+    --el-text-color-disabled:#4a6b85;
+    --el-border-color:rgba(56,160,220,.38);
+    --el-border-color-light:rgba(56,160,220,.26);
+    --el-border-color-lighter:rgba(56,160,220,.18);
+    --el-border-color-extra-light:rgba(56,160,220,.12);
+    --el-fill-color:rgba(20,70,110,.5);
+    --el-fill-color-light:rgba(20,70,110,.42);
+    --el-fill-color-lighter:rgba(16,60,96,.35);
+    --el-fill-color-blank:transparent;
+    --el-fill-color-dark:rgba(10,40,66,.7);
+    --el-mask-color:rgba(2,10,18,.72);
+    --el-color-primary:#38a7ff;
+    --el-color-primary-light-3:#5bb8ff;
+    --el-color-primary-light-5:#7ec9ff;
+    --el-color-primary-light-7:#153a56;
+    --el-color-primary-light-8:#122f47;
+    --el-color-primary-light-9:#0f2739;
+    --el-color-primary-dark-2:#2b86d6;
+    --el-color-danger:#ff6b5e;
+    --el-color-success:#2fe08a;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 520px at 50% -8%, rgba(30,120,180,.35), transparent 70%),
+      linear-gradient(180deg,#071a2b 0%, #051422 45%, #04101b 100%);
+    background-attachment:fixed;
+  }
+  /* 网格底纹 */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(64,170,230,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(64,170,230,.045) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 85%);
+  }
+  #app{ position:relative; z-index:1; }
+  [v-cloak]{ display:none; }
+  .num{ font-family:var(--mono); letter-spacing:.5px; }
+  .dim{ color:var(--dim); }
+
+  /* ---------- 滚动条 ---------- */
+  .main::-webkit-scrollbar,.el-drawer__body::-webkit-scrollbar{ width:8px; height:8px; }
+  .main::-webkit-scrollbar-thumb,.el-drawer__body::-webkit-scrollbar-thumb{
+    background:rgba(69,224,255,.3); border-radius:4px; }
+
+  /* ---------- 登录页 ---------- */
+  .login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .login-card{
+    position:relative; width:392px; padding:40px 32px 34px;
+    background:linear-gradient(180deg, rgba(11,44,72,.92), rgba(6,24,40,.94));
+    border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 0 0 1px rgba(20,90,140,.35) inset, 0 0 60px rgba(20,120,180,.28), 0 24px 60px rgba(0,0,0,.55);
+  }
+  .login-card::before,.login-card::after{
+    content:""; position:absolute; width:16px; height:16px; border-color:var(--line-hot);
+  }
+  .login-card::before{ left:-1px; top:-1px; border-left:2px solid; border-top:2px solid; }
+  .login-card::after{ right:-1px; bottom:-1px; border-right:2px solid; border-bottom:2px solid; }
+  .login-card h1{
+    font-size:21px; margin:0 0 8px; text-align:center; color:var(--text-hi);
+    letter-spacing:2px; text-shadow:0 0 16px rgba(69,224,255,.55);
+  }
+  .login-card .sub{
+    font-size:12px; color:var(--dim); text-align:center; letter-spacing:2px; margin-bottom:26px;
+    padding-bottom:14px; border-bottom:1px solid var(--line-soft);
+  }
+  .login-btn{ width:100%; margin-top:6px; letter-spacing:6px; }
+  .login-err{
+    font-size:12.5px; line-height:1.6; color:#ffb3ac;
+    background:rgba(120,26,26,.35); border:1px solid rgba(255,107,94,.45);
+    border-left:3px solid #ff6b5e; border-radius:3px; padding:8px 12px; margin:2px 0 12px;
+  }
+
+  /* ---------- 主框架 ---------- */
+  .layout{ min-height:100vh; display:flex; flex-direction:column; }
+
+  /* 顶栏 */
+  .topbar{
+    position:relative; flex:none; height:64px; display:flex; align-items:center;
+    padding:0 20px; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(14,52,84,.92), rgba(6,24,40,.5));
+    box-shadow:0 2px 24px rgba(0,0,0,.45), 0 0 40px rgba(30,130,190,.12) inset;
+  }
+  .topbar .tb-side{ flex:1; display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--dim); }
+  .topbar .tb-side.right{ justify-content:flex-end; }
+  .topbar .clock{ color:var(--cyan-2); letter-spacing:1px; }
+  .topbar .who{ color:var(--text); }
+  .topbar .who-sub{ color:var(--dim); font-size:12px; }
+  .fs-btn{
+    flex:none; margin-left:6px; padding:5px 12px; font-size:12.5px; cursor:pointer; user-select:none;
+    color:var(--cyan-2); background:rgba(16,54,86,.75); border:1px solid rgba(64,168,224,.45); border-radius:3px;
+    transition:background .15s, box-shadow .15s;
+  }
+  .fs-btn:hover{
+    color:#eaf9ff; background:rgba(30,110,170,.6); border-color:rgba(105,232,255,.7);
+    box-shadow:0 0 12px rgba(69,224,255,.35);
+  }
+  .fs-btn.dis{
+    color:rgba(126,163,191,.5); background:rgba(10,34,54,.5); border-color:rgba(45,158,214,.2);
+    cursor:not-allowed; box-shadow:none;
+  }
+  .fs-btn.dis:hover{ color:rgba(126,163,191,.5); background:rgba(10,34,54,.5); border-color:rgba(45,158,214,.2); box-shadow:none; }
+  .topbar .tb-title{
+    position:absolute; left:50%; top:0; transform:translateX(-50%);
+    height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  }
+  .topbar .tb-title h1{
+    margin:0; font-size:22px; font-weight:700; letter-spacing:5px; white-space:nowrap;
+    color:#f2fdff; text-shadow:0 0 12px rgba(69,224,255,.85), 0 0 34px rgba(40,140,255,.55);
+  }
+  .topbar .tb-title .t-bar{
+    width:280px; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(69,224,255,.15) 12%, #45e0ff 50%, rgba(69,224,255,.15) 88%, transparent);
+    box-shadow:0 0 12px rgba(69,224,255,.75);
+  }
+  .topbar .tb-title .t-dot{
+    position:absolute; bottom:-3px; width:6px; height:6px; background:#8ff0ff; transform:rotate(45deg);
+    box-shadow:0 0 10px #45e0ff;
+  }
+
+  .body-wrap{ flex:1; display:flex; min-height:0; }
+
+  /* 侧栏 */
+  .side{
+    flex:none; width:226px; padding:16px 12px 18px;
+    background:linear-gradient(180deg, rgba(8,32,54,.92), rgba(5,20,34,.96));
+    border-right:1px solid var(--line-soft);
+  }
+  .side .brand{
+    font-size:15px; font-weight:700; color:var(--text-hi); letter-spacing:2px;
+    padding-left:10px; position:relative; text-shadow:0 0 12px rgba(69,224,255,.4);
+  }
+  .side .brand::before{
+    content:""; position:absolute; left:0; top:2px; bottom:2px; width:3px; border-radius:2px;
+    background:linear-gradient(180deg,#5fe6ff,#1f7fd0); box-shadow:0 0 10px rgba(69,224,255,.8);
+  }
+  .side .teacher{ font-size:12px; color:var(--dim); margin:8px 0 18px 10px; }
+  /* 身份徽标：管理员 / 普通教师 */
+  .role-tag{
+    display:inline-block; margin-left:6px; padding:0 6px; border-radius:8px;
+    font-size:10.5px; line-height:16px; letter-spacing:.5px;
+    color:#ffd479; border:1px solid rgba(255,196,80,.45); background:rgba(255,196,80,.1);
+  }
+  .role-admin{ color:#ffd479; font-weight:600; }
+  .class-item{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    padding:9px 10px; margin-bottom:4px; font-size:13.5px; cursor:pointer;
+    color:rgba(200,228,246,.86); border-left:2px solid transparent; border-radius:2px;
+    transition:background .15s, border-color .15s;
+  }
+  .class-item:hover{ background:rgba(56,180,255,.1); }
+  .class-item.active{
+    background:linear-gradient(90deg, rgba(30,140,220,.4), rgba(30,140,220,.04));
+    border-left-color:var(--cyan); color:#eaf9ff; font-weight:600;
+  }
+  .class-item .n{ font-size:11.5px; color:var(--dim); flex:none; }
+  .class-item .cls-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .class-item .cls-del{ display:none; flex:none; font-size:12px; color:#ff9a90; cursor:pointer; }
+  .class-item:hover .cls-del{ display:inline; }
+  .class-item .cls-del:hover{ color:#ff4d3d; font-weight:700; }
+  .side .sec-title{
+    font-size:11px; color:rgba(126,163,191,.82); letter-spacing:1px;
+    margin:20px 0 8px 10px; position:relative;
+    display:flex; align-items:center; gap:6px;
+  }
+  /* 分组标题前的小竖条：比纯文字更清晰，也不会被字距撑散 */
+  .side .sec-title::before{
+    content:''; width:2px; height:10px; border-radius:1px; flex:0 0 auto;
+    background:rgba(105,232,255,.6); box-shadow:0 0 6px rgba(105,232,255,.4);
+  }
+  .side-item{
+    padding:9px 10px; margin-bottom:4px; font-size:13.5px; cursor:pointer; border-radius:2px;
+    border-left:2px solid transparent; color:rgba(200,228,246,.86);
+  }
+  .side-item:hover{ background:rgba(56,180,255,.1); }
+  .side-item.active{
+    background:linear-gradient(90deg, rgba(30,140,220,.4), rgba(30,140,220,.04));
+    border-left-color:var(--cyan); color:#eaf9ff; font-weight:600;
+  }
+  .side .side-btn{ margin-top:10px; width:100%; }
+
+  .main{ flex:1; min-width:0; padding:18px 20px 28px; overflow:auto; }
+
+  /* ---------- 面板 ---------- */
+  .panel{
+    position:relative; margin-bottom:16px;
+    background:linear-gradient(180deg, rgba(11,40,66,.72), rgba(7,26,44,.55));
+    border:1px solid var(--line); border-radius:3px;
+    box-shadow:0 0 0 1px rgba(16,64,100,.5) inset, 0 8px 28px rgba(0,0,0,.32);
+  }
+  .panel::before,.panel::after{
+    content:""; position:absolute; width:14px; height:14px; border-color:var(--line-hot); pointer-events:none;
+  }
+  .panel::before{ left:-1px; top:-1px; border-left:2px solid; border-top:2px solid; }
+  .panel::after{ right:-1px; bottom:-1px; border-right:2px solid; border-bottom:2px solid; }
+  .panel-hd{
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    border-bottom:1px solid var(--line-soft);
+    background:linear-gradient(90deg, rgba(24,96,150,.42), rgba(10,40,66,.06));
+  }
+  .panel-hd .ph-bar{
+    flex:none; width:3px; height:14px; border-radius:2px;
+    background:linear-gradient(180deg,#6fe8ff,#1f7fd0); box-shadow:0 0 10px rgba(69,224,255,.85);
+  }
+  .panel-hd h2{
+    margin:0; font-size:15px; font-weight:700; color:var(--text-hi); letter-spacing:1.5px;
+    text-shadow:0 0 12px rgba(69,224,255,.35);
+  }
+  .panel-hd .ph-rule{ margin-left:auto; font-size:12px; color:var(--dim); }
+  .panel-bd{ padding:14px; }
+
+  /* 数字统计条 */
+  .stats{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:12px; }
+  /* 我的排行榜有 5 项指标，单独走 5 列，避免最后一张卡换行落单 */
+  .stats.five{ grid-template-columns:repeat(5,minmax(0,1fr)); }
+  @media (max-width:1180px){ .stats.five{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .stat{
+    padding:10px 12px; background:rgba(12,48,80,.5);
+    border:1px solid var(--line-soft); border-left:2px solid rgba(69,224,255,.55);
+  }
+  .stat .stat-k{ font-size:12px; color:var(--dim); letter-spacing:1px; margin-bottom:6px; }
+  .stat .stat-v{
+    font-size:24px; line-height:1.1; font-weight:700; color:var(--cyan);
+    font-family:var(--mono); text-shadow:0 0 14px rgba(69,224,255,.55);
+  }
+  .stat .stat-v i{ font-style:normal; font-size:12px; color:var(--dim); margin-left:4px; letter-spacing:0; }
+
+  .toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+
+  /* ---------- 页面文字 ---------- */
+  .page-title{ font-size:19px; font-weight:700; color:var(--text-hi); margin:0 0 6px; letter-spacing:1px; }
+  .page-sub{ font-size:13px; color:var(--dim); margin-bottom:16px; }
+  .loop-no{ color:#ff8a5c; font-weight:700; font-family:var(--mono); }
+  .th-fire{ color:#ff8577; font-weight:600; }
+  .th-quake{ color:#59c2ff; font-weight:600; }
+  .ok-yes{ color:var(--green); font-weight:700; text-shadow:0 0 10px rgba(47,224,138,.4); }
+  .ok-no{ color:var(--dim); }
+  /* 密码复杂度实时规则清单 */
+  .pwd-rule{
+    display:flex; flex-wrap:wrap; gap:6px 14px;
+    padding:2px 0 8px 90px; font-size:12px; color:var(--dim); line-height:1.5;
+  }
+  .pwd-rule span{ display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+  .pwd-rule span i{ font-style:normal; font-size:11px; opacity:.55; }
+  .pwd-rule span.ok{ color:var(--green); }
+  .pwd-rule span.ok i{ opacity:1; }
+  .trace-line{ font-size:13px; line-height:1.95; word-break:break-all; color:var(--text); }
+  .trace-line b{ color:var(--cyan); }
+  .mono{ font-family:var(--mono); }
+  .rank-badge{
+    display:inline-block; min-width:24px; padding:1px 6px; font-family:var(--mono); font-size:12.5px;
+    color:#a9d6f0; background:rgba(28,96,146,.45); border:1px solid rgba(56,160,220,.3); border-radius:2px;
+  }
+  .flowers{ display:inline-flex; align-items:center; justify-content:center; gap:0; line-height:1; }
+  .flowers i{ font-style:normal; font-size:11px; margin:0 -2px; filter:drop-shadow(0 0 4px rgba(255,120,150,.35)); }
+
+  /* ---------- Element Plus 暗色适配 ---------- */
+  .el-table{
+    --el-table-border-color:rgba(56,160,220,.2);
+    --el-table-border:1px solid rgba(56,160,220,.2);
+    --el-table-text-color:#c2dcf0;
+    --el-table-header-text-color:#8fe6ff;
+    --el-table-row-hover-bg-color:rgba(38,180,255,.13);
+    --el-table-current-row-bg-color:rgba(38,180,255,.16);
+    --el-table-header-bg-color:rgba(20,78,120,.55);
+    --el-table-fixed-box-shadow:0 0 10px rgba(0,0,0,.5);
+    --el-table-bg-color:transparent;
+    --el-table-tr-bg-color:transparent;
+    background:transparent;
+  }
+  .el-table th.el-table__cell{
+    background:rgba(20,78,120,.5) !important;
+    font-weight:600; letter-spacing:.5px; font-size:12.5px;
+  }
+  .el-table td.el-table__cell{ font-size:12.5px; padding:6px 0; }
+  /* 表格内的文字按钮收紧，避免「查看轨迹 / 移出班级」换行 */
+  .el-table .el-button.is-text{ padding:3px 6px; margin-left:0; }
+  .el-table .el-button.is-text+.el-button.is-text{ margin-left:2px; }
+  .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell{
+    background:rgba(12,48,80,.35);
+  }
+  .el-table__inner-wrapper::before{ background:transparent; }
+  .el-table tr:hover>td.el-table__cell{ background:rgba(38,180,255,.12)!important; }
+  .el-table__empty-text{ color:var(--dim); }
+
+  .el-button{
+    --el-button-bg-color:rgba(16,54,86,.75);
+    --el-button-border-color:rgba(64,168,224,.45);
+    --el-button-text-color:#bfe6ff;
+    --el-button-hover-bg-color:rgba(30,110,170,.55);
+    --el-button-hover-border-color:rgba(105,232,255,.7);
+    --el-button-hover-text-color:#eaf9ff;
+    --el-button-active-bg-color:rgba(20,86,140,.7);
+    --el-button-active-border-color:var(--cyan);
+    border-radius:3px;
+  }
+  .el-button--primary{
+    --el-button-bg-color:#1478c8;
+    --el-button-border-color:rgba(105,232,255,.55);
+    --el-button-text-color:#f2fdff;
+    --el-button-hover-bg-color:#1a92ea;
+    --el-button-hover-border-color:var(--cyan);
+    --el-button-hover-text-color:#ffffff;
+    background-image:linear-gradient(180deg,#22a6ec,#0f6cba);
+    box-shadow:0 0 14px rgba(40,160,255,.35);
+  }
+  .el-button--primary.is-text,.el-button--primary.is-link{ background-image:none; box-shadow:none; }
+  .el-button.is-text{ --el-button-hover-bg-color:rgba(56,180,255,.12); }
+  .el-button--danger.is-text{ --el-button-text-color:#ff8f84; --el-button-hover-text-color:#ffb0a8; }
+  .el-checkbox{ --el-checkbox-text-color:var(--dim); --el-checkbox-checked-text-color:#dff4ff; }
+  .el-checkbox__label{ color:var(--dim); font-size:12.5px; }
+
+  .el-input__wrapper,.el-textarea__inner{
+    background:rgba(6,26,44,.85); border-radius:3px;
+    box-shadow:0 0 0 1px rgba(56,160,220,.35) inset;
+  }
+  .el-input__wrapper:hover{ box-shadow:0 0 0 1px rgba(105,232,255,.5) inset; }
+  .el-input__wrapper.is-focus{
+    box-shadow:0 0 0 1px var(--cyan) inset, 0 0 14px rgba(69,224,255,.22);
+  }
+  .el-input__inner{ color:#dff4ff; }
+  .el-input__inner::placeholder{ color:#5b7f9b; }
+  .el-select__wrapper{
+    background:rgba(6,26,44,.85); border-radius:3px;
+    box-shadow:0 0 0 1px rgba(56,160,220,.35) inset;
+  }
+  .el-select__wrapper.is-focused{ box-shadow:0 0 0 1px var(--cyan) inset; }
+  .el-select__placeholder{ color:#5b7f9b; }
+  .el-select__placeholder.is-transparent{ color:#5b7f9b; }
+  .el-select__selected-item{ color:#dff4ff; }
+  .el-popper.is-light,.el-select__popper{
+    background:#0b2439; border:1px solid var(--line)!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.55);
+  }
+  .el-popper.is-light .el-popper__arrow::before{ background:#0b2439; border-color:var(--line); }
+  .el-select-dropdown__item{ color:#b6d5ea; }
+  .el-select-dropdown__item.is-hovering{ background:rgba(56,180,255,.14); }
+  .el-select-dropdown__item.is-selected{ color:var(--cyan); font-weight:600; }
+
+  .el-dialog,.el-message-box{
+    background:linear-gradient(180deg,#0b2b46,#061a2c);
+    border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 0 60px rgba(20,120,180,.3), 0 24px 60px rgba(0,0,0,.6);
+  }
+  .el-dialog__title,.el-message-box__title{
+    color:var(--text-hi); font-size:15px; letter-spacing:1px;
+    text-shadow:0 0 12px rgba(69,224,255,.35);
+  }
+  .el-message-box__content,.el-message-box__message{ color:#b6d5ea; }
+  .el-message-box__headerbtn .el-message-box__close{ color:var(--dim); }
+  .el-drawer{
+    background:linear-gradient(180deg,#08202f,#051422);
+    border-left:1px solid var(--line);
+    box-shadow:-20px 0 60px rgba(0,0,0,.6);
+  }
+  .el-drawer__header{ color:var(--text-hi); margin-bottom:12px; padding-bottom:12px;
+    border-bottom:1px solid var(--line-soft); }
+  .el-drawer__title{ color:var(--text-hi); letter-spacing:1px; font-size:15px; }
+  .el-drawer__close-btn{ color:var(--dim); }
+  .el-overlay{ background-color:rgba(2,10,18,.72); }
+
+  .el-form-item__label{ color:var(--dim); }
+  .el-descriptions{
+    --el-descriptions-item-bordered-label-background:rgba(20,78,120,.5);
+    --el-descriptions-table-border:1px solid rgba(56,160,220,.22);
+  }
+  .el-descriptions__body{ background:transparent; }
+  .el-descriptions__cell{ color:#c2dcf0; border-color:rgba(56,160,220,.22)!important; }
+  .el-descriptions__label{ color:#8fe6ff!important; }
+  .el-tag{
+    --el-tag-bg-color:rgba(30,120,180,.28);
+    --el-tag-border-color:rgba(69,224,255,.35);
+    --el-tag-text-color:#bfe9ff;
+  }
+  .el-empty__description p{ color:var(--dim); }
+  .el-loading-mask{ background:rgba(4,16,28,.72); }
+  .el-loading-spinner .path{ stroke:var(--cyan); }
+  .el-message{
+    background:#0b2b46; border:1px solid var(--line); border-radius:3px;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+  .el-message__content{ color:#dff4ff; }
+  .el-message--success{ border-left:3px solid var(--green); }
+  .el-message--error{ border-left:3px solid var(--red); }
+  .el-message--warning{ border-left:3px solid #ffb347; }
+  h4{ color:var(--text-hi); font-size:14px; letter-spacing:.5px; margin:18px 0 10px; }
+
+  /* ---------- 空态引导 ---------- */
+  .welcome{ max-width:760px; }
+  .welcome .hi{ font-size:22px; font-weight:700; color:var(--text-hi); margin:0 0 6px; letter-spacing:1px; }
+  .welcome .desc{ font-size:13.5px; color:var(--dim); margin:0 0 18px; line-height:1.75; }
+  .step{
+    display:flex; gap:14px; padding:14px 16px; margin-bottom:10px;
+    background:rgba(12,48,80,.45); border:1px solid var(--line-soft); border-left:2px solid rgba(69,224,255,.5);
+  }
+  .step .n{
+    flex:none; width:26px; height:26px; border-radius:2px; font-family:var(--mono); font-size:13px;
+    color:#04101b; background:linear-gradient(180deg,#7fe8ff,#2aa5e8);
+    display:flex; align-items:center; justify-content:center; font-weight:700;
+    box-shadow:0 0 12px rgba(69,224,255,.5);
+  }
+  .step b{ display:block; font-size:14px; color:var(--text-hi); margin-bottom:3px; }
+  .step p{ margin:0; font-size:13px; color:var(--dim); line-height:1.75; }
+  .welcome .cta{ margin-top:8px; }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+
+  <!-- ============ 登录 ============ -->
+  <div class="login-wrap" v-if="!auth">
+    <div class="login-card">
+      <h1>安全教育互动影游</h1>
+      <div class="sub">教师管理后台 · 班级 / 数据 / 排名</div>
+      <el-form @submit.prevent="login">
+        <el-form-item>
+          <el-input v-model="loginForm.account" placeholder="教师账号（默认 teacher1）" size="large"
+                    autofocus @keyup.enter="login"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="loginForm.password" type="password" placeholder="密码" size="large"
+                    show-password @keyup.enter="login"></el-input>
+        </el-form-item>
+        <div class="login-err" v-if="loginError">⚠️ {{ loginError }}</div>
+        <el-button class="login-btn" type="primary" size="large" :loading="loginLoading" @click="login">登 录</el-button>
+      </el-form>
+    </div>
+  </div>
+
+  <!-- ============ 主框架 ============ -->
+  <div class="layout" v-else>
+
+    <header class="topbar">
+      <div class="tb-side">
+        <span class="clock num">{{ nowText }}</span>
+      </div>
+      <div class="tb-title">
+        <h1>安全教育影游 · 教师数据后台</h1>
+        <span class="t-bar"></span>
+        <span class="t-dot"></span>
+      </div>
+      <div class="tb-side right">
+        <span class="who">👤 {{ auth.name }}</span>
+        <span class="who-sub">{{ auth.account }}</span>
+        <span class="fs-btn" :class="{dis: isFull}" @click="enterFull" title="全屏显示（F11 亦可）">⛶ 全屏</span>
+        <span class="fs-btn" :class="{dis: !isFull}" @click="exitFull" title="退出全屏（Esc）">⤢ 退出全屏</span>
+      </div>
+    </header>
+
+    <div class="body-wrap">
+      <aside class="side">
+        <div class="brand">安全教育影游后台</div>
+        <div class="teacher">教师 · {{ auth.account }}<span v-if="isAdmin" class="role-tag">管理员</span></div>
+
+        <div class="sec-title">我的</div>
+        <div class="side-item" :class="{active: view==='overview'}" @click="openOverview">🏆 我的排行榜</div>
+
+        <div class="sec-title">班级</div>
+        <div v-for="c in classes" :key="c.class_id" class="class-item"
+             :class="{active: view==='class' && curClass && curClass.class_id===c.class_id}"
+             @click="openClass(c)">
+          <span class="cls-name">{{ c.class_name }}</span>
+          <span class="n">{{ c.student_count }}人</span>
+          <span class="cls-del" title="删除班级" @click.stop="delClass(c)">✕</span>
+        </div>
+        <el-button class="side-btn" size="small" plain @click="createClass">＋ 新建班级</el-button>
+
+        <div class="sec-title">管理</div>
+        <div class="side-item" :class="{active: view==='unbind'}" @click="openUnbind">🧒 未归班学生</div>
+        <div class="side-item" v-if="isAdmin" :class="{active: view==='teachers'}" @click="openTeachers">👥 教师管理</div>
+        <div class="side-item" @click="openChangePwd">🔒 修改密码</div>
+        <div class="side-item" @click="logout">🚪 退出登录</div>
+      </aside>
+
+      <main class="main">
+
+        <!-- ======== 空态：还没选班级 / 还没建班级 ======== -->
+        <template v-if="view===''">
+          <section class="panel">
+            <div class="panel-hd">
+              <span class="ph-bar"></span>
+              <h2>欢迎回来</h2>
+              <span class="ph-rule">{{ auth.name }} · {{ auth.account }}</span>
+            </div>
+            <div class="panel-bd">
+              <div class="welcome">
+                <h2 class="hi">欢迎回来，{{ auth.name }}</h2>
+                <p class="desc">
+                  <template v-if="classes.length">左侧点一个班级，就能看到该班学生的通关状态、耗时、死循环次数与完整轨迹。</template>
+                  <template v-else>你的账号下还没有班级。按下面三步，学生的闯关数据就会自动汇总到这里。</template>
+                </p>
+
+                <p class="desc" v-if="isAdmin" style="margin-top:-8px">
+                  👑 你是管理员，可以在左侧「👥 教师管理」里为其他老师开通账号；每位老师只会看到自己班级的数据。
+                </p>
+
+                <div class="step">
+                  <span class="n">1</span>
+                  <div>
+                    <b>新建班级</b>
+                    <p>点左侧「＋ 新建班级」，输入班级名称（如：三年级2班）。</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <span class="n">2</span>
+                  <div>
+                    <b>让学生进游戏时登记身份</b>
+                    <p>学生打开影游首页点「开始游玩」，会弹出身份窗，填写班级与姓名。班级名和你建的一致，之后在「未归班学生」里一眼就能认出来。</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <span class="n">3</span>
+                  <div>
+                    <b>把未归班学生拉进班级</b>
+                    <p>学生登记后会出现在左侧「🧒 未归班学生」里，勾选后选择目标班级批量拉入，即可在班级排名中查看他的数据。</p>
+                  </div>
+                </div>
+
+                <el-button class="cta" type="primary" @click="createClass">＋ 立即新建班级</el-button>
+              </div>
+            </div>
+          </section>
+        </template>
+
+        <!-- ======== 班级视图：排行榜 + 学生数据 ======== -->
+        <template v-if="view==='class' && curClass">
+          <section class="panel">
+            <div class="panel-hd">
+              <span class="ph-bar"></span>
+              <h2>{{ curClass.class_name }} · 班级排名</h2>
+              <span class="ph-rule">通关优先 → 耗时升序 → 死循环少者靠前</span>
+            </div>
+            <div class="panel-bd">
+
+              <div class="stats">
+                <div class="stat">
+                  <div class="stat-k">班级人数</div>
+                  <div class="stat-v">{{ stats.total }}<i>人</i></div>
+                </div>
+                <div class="stat">
+                  <div class="stat-k">已通关</div>
+                  <div class="stat-v">{{ stats.done }}<i>人 · {{ stats.rate }}%</i></div>
+                </div>
+                <div class="stat">
+                  <div class="stat-k">平均耗时</div>
+                  <div class="stat-v" style="font-size:20px">{{ stats.avgText }}</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-k">已发出小红花</div>
+                  <div class="stat-v">{{ stats.flowers }}<i>朵</i></div>
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <el-button type="primary" size="small" @click="loadRank" :loading="rankLoading">刷新</el-button>
+                <el-button size="small" @click="exportCsv">导出 Excel 报表</el-button>
+                <el-checkbox v-model="withPhone" size="small" style="margin-left:6px">导出含手机号</el-checkbox>
+                <span class="dim" style="margin-left:auto; font-size:12px">奖励：第 1 名 10 朵 🌸，第 10 名 1 朵</span>
+              </div>
+
+              <el-table :data="rank" border stripe size="small" v-loading="rankLoading">
+                <el-table-column prop="rank" label="排名" width="62" align="center">
+                  <template #default="s">
+                    <span v-if="s.row.rank===1">🥇</span><span v-else-if="s.row.rank===2">🥈</span>
+                    <span v-else-if="s.row.rank===3">🥉</span>
+                    <span v-else class="rank-badge">{{ s.row.rank }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="student_name" label="学生姓名" min-width="86" show-overflow-tooltip></el-table-column>
+                <el-table-column label="通关状态" width="92" align="center">
+                  <template #default="s">
+                    <span v-if="!s.row.played" class="ok-no">未开始</span>
+                    <span v-else-if="s.row.is_complete===1" class="ok-yes">已通关</span>
+                    <span v-else class="ok-no">未通关</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="主题" width="90" align="center">
+                  <template #default="s">
+                    <span v-if="s.row.theme==='防火'" class="th-fire">防火</span>
+                    <span v-else-if="s.row.theme==='防震'" class="th-quake">防震</span>
+                    <span v-else-if="s.row.theme" class="th-fire">防火 / 防震</span>
+                    <span v-else class="ok-no">—</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="总耗时" width="100" align="center">
+                  <template #default="s"><span class="num">{{ s.row.total_cost_sec==null ? '—' : fmtDur(s.row.total_cost_sec) }}</span></template>
+                </el-table-column>
+                <el-table-column label="死循环总次数" width="104" align="center">
+                  <template #default="s"><span class="num" :class="{loop_no: s.row.loop_total>0}">{{ s.row.loop_total }}</span></template>
+                </el-table-column>
+                <el-table-column label="结局编号" width="192" align="center" show-overflow-tooltip>
+                  <template #default="s">{{ endingName(s.row.ending_id) }}</template>
+                </el-table-column>
+                <el-table-column label="奖励" width="124" align="center">
+                  <template #default="s">
+                    <span v-if="flowerOf(s.row.rank)" class="flowers"
+                          :title="'第' + s.row.rank + '名 · ' + flowerOf(s.row.rank) + ' 朵小红花'">
+                      <i v-for="n in flowerOf(s.row.rank)" :key="n">🌸</i>
+                    </span>
+                    <span v-else class="ok-no">—</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="164" align="center">
+                  <template #default="s">
+                    <el-button size="small" text type="primary" :disabled="!s.row.record_id"
+                               @click="showDetail(s.row.record_id)">查看轨迹</el-button>
+                    <el-button size="small" text type="danger"
+                               @click="removeStudent(s.row)">移出班级</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </section>
+        </template>
+
+        <!-- ======== 我的排行榜（跨班级汇总，只含自己的班） ======== -->
+        <template v-if="view==='overview'">
+          <section class="panel">
+            <div class="panel-hd">
+              <span class="ph-bar"></span>
+              <h2>我的排行榜 · 全部班级</h2>
+              <span class="ph-rule">
+                仅统计你名下 {{ overview ? overview.summary.class_count : 0 }} 个班级 · 同一学生只计最优一次
+              </span>
+            </div>
+            <div class="panel-bd" v-loading="overviewLoading">
+              <template v-if="overview">
+                <div class="stats five">
+                  <div class="stat">
+                    <div class="stat-k">我的班级</div>
+                    <div class="stat-v">{{ overview.summary.class_count }}<i>个</i></div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-k">学生总数</div>
+                    <div class="stat-v">{{ overview.summary.student_count }}<i>人</i></div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-k">已通关</div>
+                    <div class="stat-v">{{ overview.summary.done }}<i>人 · {{ overview.summary.rate }}%</i></div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-k">平均耗时</div>
+                    <div class="stat-v" style="font-size:20px">
+                      {{ overview.summary.avg_cost_sec==null ? '—' : fmtDur(overview.summary.avg_cost_sec) }}</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-k">已发出小红花</div>
+                    <div class="stat-v">{{ overview.summary.flowers }}<i>朵</i></div>
+                  </div>
+                </div>
+
+                <h4>📚 班级横向对比</h4>
+                <el-table :data="overview.classes" border size="small" style="margin-bottom:6px">
+                  <el-table-column prop="class_name" label="班级" min-width="150" show-overflow-tooltip></el-table-column>
+                  <el-table-column prop="student_count" label="人数" width="80" align="center"></el-table-column>
+                  <el-table-column label="已通关" width="120" align="center">
+                    <template #default="s">
+                      <span class="num">{{ s.row.done }}</span>
+                      <span class="dim">（{{ s.row.rate }}%）</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="平均耗时" width="110" align="center">
+                    <template #default="s">
+                      <span class="num">{{ s.row.avg_cost_sec==null ? '—' : fmtDur(s.row.avg_cost_sec) }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="小红花" width="130" align="center">
+                    <template #default="s">
+                      <span class="num">{{ s.row.flowers }}</span>
+                      <span class="flowers" style="margin-left:6px" :title="s.row.flowers + ' 朵'">
+                        <i v-for="n in Math.min(s.row.flowers,4)" :key="n">🌸</i>
+                      </span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="88" align="center">
+                    <template #default="s">
+                      <el-button size="small" text type="primary" @click="openClassById(s.row.class_id)">查看</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+                <h4>🏅 学生总榜（前 50 名 · 跨班级）</h4>
+                <el-table :data="overview.top" border stripe size="small">
+                  <el-table-column prop="rank" label="排名" width="62" align="center">
+                    <template #default="s">
+                      <span v-if="s.row.rank===1">🥇</span><span v-else-if="s.row.rank===2">🥈</span>
+                      <span v-else-if="s.row.rank===3">🥉</span>
+                      <span v-else class="rank-badge">{{ s.row.rank }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="student_name" label="学生姓名" min-width="90" show-overflow-tooltip></el-table-column>
+                  <el-table-column prop="class_name" label="班级" min-width="120" show-overflow-tooltip></el-table-column>
+                  <el-table-column label="通关状态" width="92" align="center">
+                    <template #default="s">
+                      <span v-if="s.row.is_complete===1" class="ok-yes">已通关</span>
+                      <span v-else-if="s.row.is_complete===0" class="ok-no">未通关</span>
+                      <span v-else class="ok-no">未开始</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="主题" width="92" align="center">
+                    <template #default="s">
+                      <span v-if="s.row.theme==='防火'" class="th-fire">防火</span>
+                      <span v-else-if="s.row.theme==='防震'" class="th-quake">防震</span>
+                      <span v-else-if="s.row.theme" class="th-fire">防火 / 防震</span>
+                      <span v-else class="ok-no">—</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="总耗时" width="100" align="center">
+                    <template #default="s">
+                      <span class="num">{{ s.row.total_cost_sec==null ? '—' : fmtDur(s.row.total_cost_sec) }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="死循环" width="80" align="center">
+                    <template #default="s"><span class="num">{{ s.row.loop_total }}</span></template>
+                  </el-table-column>
+                  <el-table-column label="结局" width="180" align="center" show-overflow-tooltip>
+                    <template #default="s">{{ endingName(s.row.ending_id) }}</template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="96" align="center">
+                    <template #default="s">
+                      <el-button size="small" text type="primary" :disabled="!s.row.record_id"
+                                 @click="showDetail(s.row.record_id)">查看轨迹</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+              <el-empty v-else description="还没有数据，先在左侧新建班级吧" :image-size="70"></el-empty>
+            </div>
+          </section>
+        </template>
+
+        <!-- ======== 教师管理（仅管理员） ======== -->
+        <template v-if="view==='teachers' && isAdmin">
+          <section class="panel">
+            <div class="panel-hd">
+              <span class="ph-bar"></span>
+              <h2>教师账号管理</h2>
+              <span class="ph-rule">每位教师独立管理自己的班级、学生与排行榜，彼此看不到对方数据</span>
+            </div>
+            <div class="panel-bd">
+              <div class="toolbar">
+                <el-button type="primary" size="small" @click="openTeacherForm()">＋ 新增教师</el-button>
+                <el-button size="small" @click="loadTeachers" :loading="teachersLoading">刷新</el-button>
+                <span class="dim" style="margin-left:auto; font-size:12px">
+                  删除教师前需先清空其名下班级；当前登录账号不能删除自己
+                </span>
+              </div>
+              <el-table :data="teachers" border stripe size="small" v-loading="teachersLoading">
+                <el-table-column label="#" width="54" align="center">
+                  <template #default="s"><span class="num">{{ s.$index + 1 }}</span></template>
+                </el-table-column>
+                <el-table-column prop="teacher_name" label="姓名" min-width="110" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="account" label="登录账号" min-width="120" show-overflow-tooltip>
+                  <template #default="s">
+                    <span class="num">{{ s.row.account }}</span>
+                    <span v-if="s.row.teacher_id===auth.teacher_id" class="dim" style="font-size:11px">（我）</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="身份" width="96" align="center">
+                  <template #default="s">
+                    <span :class="s.row.is_admin ? 'role-admin' : 'ok-no'">{{ s.row.is_admin ? '管理员' : '教师' }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="class_count" label="班级数" width="80" align="center"></el-table-column>
+                <el-table-column prop="student_count" label="学生数" width="80" align="center"></el-table-column>
+                <el-table-column prop="create_time" label="创建时间" width="158">
+                  <template #default="s"><span class="num">{{ s.row.create_time }}</span></template>
+                </el-table-column>
+                <el-table-column label="操作" width="286" align="center">
+                  <template #default="s">
+                    <el-button size="small" text type="primary" @click="openTeacherForm(s.row)">改名</el-button>
+                    <el-button size="small" text type="primary" @click="openResetPwd(s.row)">重置密码</el-button>
+                    <el-button size="small" text type="warning" v-if="s.row.teacher_id!==auth.teacher_id"
+                               @click="toggleAdmin(s.row)">{{ s.row.is_admin ? '取消管理员' : '设为管理员' }}</el-button>
+                    <el-button size="small" text type="danger" v-if="s.row.teacher_id!==auth.teacher_id"
+                               @click="delTeacher(s.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </section>
+        </template>
+
+        <!-- ======== 未归班学生 ======== -->
+        <template v-if="view==='unbind'">
+          <section class="panel">
+            <div class="panel-hd">
+              <span class="ph-bar"></span>
+              <h2>未归班学生</h2>
+              <span class="ph-rule">已登记身份、但尚未加入你名下任何班级</span>
+            </div>
+            <div class="panel-bd">
+              <div class="toolbar">
+                <el-select v-model="unbindTarget" placeholder="选择目标班级" style="width:220px" size="small">
+                  <el-option v-for="c in classes" :key="c.class_id" :label="c.class_name" :value="c.class_id"></el-option>
+                </el-select>
+                <el-button type="primary" size="small" :disabled="!unbindSel.length || !unbindTarget"
+                           @click="addStudents">拉入班级（{{ unbindSel.length }}）</el-button>
+                <el-button size="small" @click="loadUnbind" :loading="unbindLoading">刷新</el-button>
+                <el-checkbox v-model="unbindOnlyMine" size="small" style="margin-left:6px">
+                  只看与我班级同名的
+                </el-checkbox>
+                <span class="dim" style="margin-left:auto; font-size:12px">
+                  共 {{ unbindList.length }} 人待归班，其中 {{ unbindList.filter(s=>s.matched).length }} 人登记班级与你一致
+                </span>
+              </div>
+              <el-table :data="unbindShown" border stripe size="small" v-loading="unbindLoading"
+                        @selection-change="s => unbindSel = s">
+                <el-table-column type="selection" width="44"></el-table-column>
+                <el-table-column prop="student_name" label="姓名" min-width="90"></el-table-column>
+                <el-table-column prop="class_name" label="登记班级" min-width="120"></el-table-column>
+                <el-table-column label="归属" width="96" align="center">
+                  <template #default="s">
+                    <span v-if="s.row.matched" class="ok-yes">我的班</span>
+                    <span v-else class="ok-no">其他</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="phone" label="手机号" width="130">
+                  <template #default="s"><span class="num">{{ s.row.phone || '—' }}</span></template>
+                </el-table-column>
+                <el-table-column prop="play_count" label="游戏次数" width="90" align="center"></el-table-column>
+                <el-table-column prop="create_time" label="首次进入时间" width="170">
+                  <template #default="s"><span class="num">{{ s.row.create_time }}</span></template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </section>
+        </template>
+
+        <!-- ======== 学生轨迹详情抽屉 ======== -->
+        <el-drawer v-model="detailShow" size="620px" title="学生游戏轨迹详情">
+          <div v-if="detail" v-loading="detailLoading">
+            <el-descriptions :column="2" border size="small" style="margin-bottom:14px">
+              <el-descriptions-item label="姓名">{{ detail.session.student_name }}</el-descriptions-item>
+              <el-descriptions-item label="班级">{{ detail.session.class_name }}</el-descriptions-item>
+              <el-descriptions-item label="开始时间">{{ detail.session.start_time }}</el-descriptions-item>
+              <el-descriptions-item label="结束时间">{{ detail.session.end_time || '进行中' }}</el-descriptions-item>
+              <el-descriptions-item label="通关状态">
+                <span :class="detail.session.is_complete==1 ? 'ok-yes' : 'ok-no'">
+                  {{ detail.session.is_complete==1 ? '已通关' : '未通关' }}</span>
+              </el-descriptions-item>
+              <el-descriptions-item label="总耗时">
+                {{ detail.session.total_cost_sec==null ? '—' : fmtDur(detail.session.total_cost_sec) }}</el-descriptions-item>
+              <el-descriptions-item label="主题">
+                <span v-if="themeOfTrace(detail.trace)==='防火'" class="th-fire">防火</span>
+                <span v-else-if="themeOfTrace(detail.trace)==='防震'" class="th-quake">防震</span>
+                <span v-else-if="themeOfTrace(detail.trace)" class="th-fire">防火 / 防震</span>
+                <span v-else class="ok-no">—</span>
+              </el-descriptions-item>
+            </el-descriptions>
+
+            <h4>💀 死循环统计</h4>
+            <el-table :data="detail.loops" size="small" border v-if="detail.loops.length" style="margin-bottom:14px">
+              <el-table-column label="循环节点" min-width="220">
+                <template #default="s">{{ s.row.loop_node_id }}<span
+                  v-if="NODE_MAP[s.row.loop_node_id]"> · {{ NODE_MAP[s.row.loop_node_id].t }}</span></template>
+              </el-table-column>
+              <el-table-column prop="enter_count" label="进入次数" width="90" align="center">
+                <template #default="s"><span class="loop-no">{{ s.row.enter_count }}</span></template>
+              </el-table-column>
+              <el-table-column prop="last_enter_time" label="最近进入时间"></el-table-column>
+            </el-table>
+            <el-empty v-if="!detail.loops.length" description="本局没有进入死循环" :image-size="50"></el-empty>
+
+            <h4>🎯 QTE / 交互完成情况</h4>
+            <el-table :data="detail.qtes" size="small" border style="margin-bottom:14px" max-height="300">
+              <el-table-column prop="occur_time" label="时间" width="90">
+                <template #default="s">{{ (s.row.occur_time||'').slice(11,19) }}</template>
+              </el-table-column>
+              <el-table-column prop="qte_name" label="动作" min-width="140" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="qte_type" label="类型" width="80" align="center"></el-table-column>
+              <el-table-column label="结果" width="70" align="center">
+                <template #default="s">
+                  <span :class="s.row.is_success==1 ? 'ok-yes' : 'loop-no'">{{ s.row.is_success==1 ? '成功' : '失败' }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="用时" width="90" align="center">
+                <template #default="s">{{ s.row.cost_ms }}ms</template>
+              </el-table-column>
+              <el-table-column prop="attempt_count" label="尝试" width="60" align="center"></el-table-column>
+            </el-table>
+            <el-empty v-if="!detail.qtes.length" description="暂无交互记录" :image-size="50"></el-empty>
+
+            <h4>🏁 结局达成</h4>
+            <el-tag v-for="(e,i) in detail.endings" :key="i" size="small" style="margin:0 6px 6px 0">
+              结局 {{ endingName(e.ending_id) }}　{{ (e.occur_time||'').slice(11,19) }}</el-tag>
+            <el-empty v-if="!detail.endings.length" description="未抵达任何结局" :image-size="50"></el-empty>
+
+            <h4>🧭 完整轨迹（节点时序）</h4>
+            <div class="trace-line mono">
+              <template v-for="(t,i) in detail.trace" :key="i">
+                <span>{{ (t.enter_time||'').slice(11,19) }} 进入节点 <b>{{ t.node_id }}</b><span
+                  v-if="nodeName(t)"> · {{ nodeName(t) }}</span><span
+                  v-if="t.choice_id!=null" style="color:#7fd8f7">（选择{{ t.choice_id }}<template
+                  v-if="choiceName(t)">：{{ choiceName(t) }}</template>）</span></span><br>
+              </template>
+            </div>
+            <el-empty v-if="!detail.trace.length" description="暂无轨迹" :image-size="50"></el-empty>
+          </div>
+        </el-drawer>
+
+        <!-- ======== 修改密码 ======== -->
+        <el-dialog v-model="pwdShow" title="修改登录密码" width="420px" :close-on-click-modal="false">
+          <el-form label-width="86px" @submit.prevent="submitChangePwd">
+            <el-form-item label="原密码">
+              <el-input v-model="pwdForm.old" type="password" show-password placeholder="当前密码" autocomplete="current-password"></el-input>
+            </el-form-item>
+            <el-form-item label="新密码">
+              <el-input v-model="pwdForm.new" type="password" show-password
+                        placeholder="至少 6 位，须含字母、数字和 @" autocomplete="new-password"
+                        @input="pwdError=''"></el-input>
+            </el-form-item>
+            <div class="pwd-rule" v-if="pwdForm.new">
+              <span v-for="c in pwdChecks(pwdForm.new)" :key="c.k" :class="{ok: c.ok}">
+                <i>{{ c.ok ? '✓' : '○' }}</i>{{ c.k }}</span>
+            </div>
+            <el-form-item label="确认新密码">
+              <el-input v-model="pwdForm.confirm" type="password" show-password placeholder="再输一次" autocomplete="new-password"
+                        @input="pwdError=''" @keyup.enter="submitChangePwd"></el-input>
+            </el-form-item>
+            <div class="login-err" v-if="pwdError">⚠️ {{ pwdError }}</div>
+          </el-form>
+          <template #footer>
+            <el-button @click="pwdShow=false">取消</el-button>
+            <el-button type="primary" :loading="pwdLoading" @click="submitChangePwd">确认修改</el-button>
+          </template>
+        </el-dialog>
+        <!-- ======== 新增 / 编辑教师 ======== -->
+        <el-dialog v-model="tForm.show" :title="tForm.teacher_id ? '编辑教师' : '新增教师'"
+                   width="460px" :close-on-click-modal="false">
+          <el-form label-width="90px" @submit.prevent="submitTeacherForm">
+            <el-form-item label="登录账号">
+              <el-input v-model="tForm.account" :disabled="!!tForm.teacher_id"
+                        placeholder="字母/数字，3~50 位，如 liu2024" autocomplete="off"
+                        @input="tForm.error=''"></el-input>
+            </el-form-item>
+            <el-form-item label="教师姓名">
+              <el-input v-model="tForm.teacher_name" placeholder="如：刘老师" maxlength="50"
+                        @input="tForm.error=''"></el-input>
+            </el-form-item>
+            <el-form-item label="初始密码" v-if="!tForm.teacher_id">
+              <el-input v-model="tForm.password" type="password" show-password
+                        placeholder="至少 6 位，须含字母、数字和 @" autocomplete="new-password"
+                        @input="tForm.error=''"></el-input>
+            </el-form-item>
+            <div class="pwd-rule" v-if="!tForm.teacher_id && tForm.password">
+              <span v-for="c in pwdChecks(tForm.password)" :key="c.k" :class="{ok: c.ok}">
+                <i>{{ c.ok ? '✓' : '○' }}</i>{{ c.k }}</span>
+            </div>
+            <el-form-item label="管理员">
+              <el-switch v-model="tForm.is_admin" :active-value="1" :inactive-value="0"
+                         :disabled="!tForm.teacher_id ? false : (tForm.teacher_id===auth.teacher_id && !isAdmin)"></el-switch>
+              <span class="dim" style="margin-left:10px; font-size:12px">管理员可新增/删除其他教师账号</span>
+            </el-form-item>
+            <div class="login-err" v-if="tForm.error">⚠️ {{ tForm.error }}</div>
+          </el-form>
+          <template #footer>
+            <el-button @click="tForm.show=false">取消</el-button>
+            <el-button type="primary" :loading="tForm.loading" @click="submitTeacherForm">
+              {{ tForm.teacher_id ? '保存' : '创建账号' }}</el-button>
+          </template>
+        </el-dialog>
+
+        <!-- ======== 重置教师密码 ======== -->
+        <el-dialog v-model="resetForm.show" title="重置教师密码" width="420px" :close-on-click-modal="false">
+          <el-form label-width="90px" @submit.prevent="submitResetPwd">
+            <el-form-item label="教师">
+              <el-input :model-value="resetForm.name" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="新密码">
+              <el-input v-model="resetForm.password" type="password" show-password
+                        placeholder="至少 6 位，须含字母、数字和 @" autocomplete="new-password"
+                        @input="resetForm.error=''" @keyup.enter="submitResetPwd"></el-input>
+            </el-form-item>
+            <div class="pwd-rule" v-if="resetForm.password">
+              <span v-for="c in pwdChecks(resetForm.password)" :key="c.k" :class="{ok: c.ok}">
+                <i>{{ c.ok ? '✓' : '○' }}</i>{{ c.k }}</span>
+            </div>
+            <div class="login-err" v-if="resetForm.error">⚠️ {{ resetForm.error }}</div>
+          </el-form>
+          <template #footer>
+            <el-button @click="resetForm.show=false">取消</el-button>
+            <el-button type="primary" :loading="resetForm.loading" @click="submitResetPwd">确认重置</el-button>
+          </template>
+        </el-dialog>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script src="assets/vendor/vue.global.prod.js"></script>
+<script src="assets/vendor/element-plus.full.min.js"></script>
+<script src="assets/vendor/element-plus-icons.min.js"></script>
+<script src="assets/vendor/element-plus-locale-zh-cn.js"></script>
+<script>
+const { createApp } = Vue;
+const El = ElementPlus;
+
+  /* 节点编号 → 中文名称 + 该节点选项原文（由 tools/gen-node-map.mjs 自动生成） */
+  var NODE_MAP = {
+    1: { t: "吉祥物登场", c: ["火灾来了怎么办？","地震来了怎么办？","继续游戏"] },
+    2: { t: "观察教学楼", c: ["绿色指示灯在火灾浓烟环境下，指引人员逃生","绿色指示灯没有用"] },
+    3: { t: "警报响起", c: ["听指挥","随便跑"] },
+    4: { t: "1-F1 教室发现火情", c: ["捂住口鼻、弯下腰，有序离开","直立快跑冲向门口","躲在角落里"] },
+    5: { t: "1-F1-C 短结局 · 延误被困", c: [] },
+    6: { t: "1-F2 楼道逃生", c: [] },
+    7: { t: "1-F3 高压节点 · 楼梯间连续逃生", c: [] },
+    8: { t: "1-F3-A 三轮躲闪成功", c: [] },
+    9: { t: "1-F3-B 躲闪失败", c: [] },
+    10: { t: "1-S1 教室地震避险", c: [] },
+    11: { t: "1-S1-B 短结局 · 慌乱奔跑", c: [] },
+    12: { t: "1-S1-C 短结局 · 窗户危险", c: [] },
+    13: { t: "1-S2 震后观察", c: [] },
+    14: { t: "1-S3 高压节点 · 楼道撤离 QTE", c: [] },
+    15: { t: "1-S3-A QTE 成功", c: [] },
+    16: { t: "1-S3-B QTE 失败", c: [] },
+    17: { t: "到达操场", c: ["防火要用湿毛巾捂住口鼻，弯腰有序离开","地震要躲到桌子下面，跑的时候不能乱挤","随便跑"] },
+    18: { t: "一般结局 · 需要加强训练", c: ["躲闪时候慢了","不是我的原因"] },
+    19: { t: "1-F1-B 短结局 · 浓烟呛伤", c: [] }
+  };
+
+  /* 结局编号 → 结局名称 */
+  var ENDING_MAP = {
+    "1": "延误被困（bad）",
+    "2": "躲闪失败（bad）",
+    "3": "慌乱奔跑（bad）",
+    "4": "窗户危险（bad）",
+    "5": "QTE 失败（bad）",
+    "6": "安全小卫士（good）",
+    "7": "需要加强训练（normal）",
+    "8": "浓烟呛伤（bad）"
+  };
+
+
+const app = createApp({
+  data() {
+    return {
+      auth: JSON.parse(localStorage.getItem("sws-teacher") || "null"),
+      loginForm: { account: "", password: "" },
+      loginLoading: false,
+      loginError: "",
+      pwdShow: false, pwdLoading: false, pwdError: "",
+      pwdForm: { old: "", new: "", confirm: "" },
+      classes: [],
+      view: "",              // class | unbind
+      curClass: null,
+      rank: [], rankLoading: false,
+      withPhone: false,
+      unbindList: [], unbindSel: [], unbindTarget: "", unbindLoading: false,
+      unbindOnlyMine: true,
+      detailShow: false, detail: null, detailLoading: false,
+      nowText: "", clockTimer: null,
+      isFull: false,
+      /* ---- 多教师 ---- */
+      isAdmin: 0,
+      overview: null, overviewLoading: false,
+      teachers: [], teachersLoading: false,
+      tForm: { show: false, loading: false, error: "", teacher_id: "", account: "", teacher_name: "", password: "", is_admin: 0 },
+      resetForm: { show: false, loading: false, error: "", teacher_id: "", name: "", password: "" },
+    };
+  },
+  created() {
+    this.updateClock();
+    if (this.auth) {
+      this.isAdmin = this.auth.is_admin ? 1 : 0;
+      this.loadMe();          // 以服务端为准校正姓名与管理员身份（本地 localStorage 可能过期）
+      this.loadClasses();
+    }
+  },
+  mounted() {
+    this.clockTimer = setInterval(this.updateClock, 1000);
+    /* 全屏状态同步（按 Esc 退出时按钮文字要跟着变） */
+    this._onFsChange = () => { this.isFull = !!(document.fullscreenElement || document.webkitFullscreenElement); };
+    document.addEventListener("fullscreenchange", this._onFsChange);
+    document.addEventListener("webkitfullscreenchange", this._onFsChange);
+  },
+  beforeUnmount() {
+    if (this.clockTimer) clearInterval(this.clockTimer);
+    document.removeEventListener("fullscreenchange", this._onFsChange);
+    document.removeEventListener("webkitfullscreenchange", this._onFsChange);
+  },
+  computed: {
+    /* 模板里也要用节点名称表，挂到实例上 */
+    NODE_MAP() { return NODE_MAP; },
+    /* 未归班学生：默认只看「登记班级名与我某个班级一致」的，避免看到别的老师的学生 */
+    unbindShown() {
+      const list = this.unbindList || [];
+      return this.unbindOnlyMine ? list.filter(s => s.matched === 1) : list;
+    },
+    /* 顶部数据条：人数 / 已通关 / 平均耗时 / 小红花总数 */
+    stats() {
+      const list = this.rank || [];
+      const total = list.length;
+      const done = list.filter(r => r.is_complete === 1).length;
+      const secs = list.filter(r => r.total_cost_sec !== null && r.total_cost_sec !== undefined)
+                       .map(r => Number(r.total_cost_sec));
+      const avg = secs.length ? Math.round(secs.reduce((a, b) => a + b, 0) / secs.length) : null;
+      let flowers = 0;
+      list.forEach(r => { flowers += this.flowerOf(r.rank); });
+      return {
+        total: total,
+        done: done,
+        rate: total ? Math.round(done * 100 / total) : 0,
+        avgText: avg === null ? "—" : this.fmtDur(avg),
+        flowers: flowers,
+      };
+    },
+  },
+  methods: {
+    /* ---- 顶栏时钟：2026 10 23 13:54:02 星期五 ---- */
+    updateClock() {
+      const d = new Date();
+      const p = n => (n < 10 ? "0" + n : "" + n);
+      const wk = "日一二三四五六"[d.getDay()];
+      this.nowText = d.getFullYear() + " " + p(d.getMonth() + 1) + " " + p(d.getDate()) + " "
+        + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) + " 星期" + wk;
+    },
+
+    /* ---- 奖励规则：第 1 名 10 朵、第 2 名 9 朵……第 10 名 1 朵，10 名之后没有 ---- */
+    flowerOf(rank) {
+      const n = Number(rank);
+      return (n >= 1 && n <= 10) ? (11 - n) : 0;
+    },
+
+    /* ---- 全屏 / 退出全屏 ---- */
+    enterFull() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) return;
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (!req) { El.ElMessage.warning("当前浏览器不支持全屏，可按 F11"); return; }
+      try { req.call(el); } catch (e) { El.ElMessage.warning("当前浏览器不支持全屏，可按 F11"); }
+    },
+    exitFull() {
+      if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+    },
+
+    /* ---- 请求封装：带教师令牌 ---- */
+    async api(path, opts = {}) {
+      const headers = { "Content-Type": "application/json" };
+      if (this.auth) { headers["X-Teacher-Id"] = this.auth.teacher_id; headers["X-Token"] = this.auth.token; }
+      const res = await fetch("api/" + path, { headers, ...opts });
+      const ct = res.headers.get("content-type") || "";
+      if (res.status === 401) {
+        /* 401 有两种含义：令牌过期（已登录时）/ 账号密码错误（登录时），要分开提示 */
+        let msg = "";
+        if (ct.includes("application/json")) {
+          try { msg = (await res.json()).msg || ""; } catch (err) {}
+        }
+        if (!this.auth) throw new Error(msg || "账号或密码错误");   // 登录接口自身返回的凭据错误
+        this.logout(true);
+        El.ElMessage.error(msg || "登录已失效，请重新登录");
+        throw new Error(msg || "登录失效");
+      }
+      if (!ct.includes("application/json")) {
+        /* CSV 导出走这里；若是错误响应（PHP 报错等），把内容提取出来当异常抛出 */
+        if (res.ok) return res;
+        let t = "";
+        try { t = (await res.text()).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(); } catch (err) {}
+        throw new Error("服务器错误 HTTP " + res.status + (t ? "：" + t.slice(0, 90) : ""));
+      }
+      const data = await res.json();
+      if (data.code !== 0) { El.ElMessage.error(data.msg || "请求失败"); throw new Error(data.msg); }
+      return data;
+    },
+
+    /* ---- 编号 → 中文名称（新数据直接用接口返回的文字，老数据用内置映射表兜底） ---- */
+    nodeName(t) {
+      const saved = (t && t.node_title ? String(t.node_title) : "").trim();
+      if (saved) return saved;
+      const m = NODE_MAP[t.node_id];
+      return (m && m.t) || "";
+    },
+    choiceName(t) {
+      const saved = (t && t.choice_text ? String(t.choice_text) : "").trim();
+      if (saved) return saved;
+      const m = NODE_MAP[t.node_id];
+      return ((m && m.c) || [])[(t.choice_id || 0) - 1] || "";
+    },
+    /* 主题判定：1-4~1-9、1-19 属火灾线；1-10~1-18 属地震线（与后端 class_best_records 一致） */
+    themeOfTrace(trace) {
+      let fire = false, quake = false;
+      (trace || []).forEach((t) => {
+        const n = Number(t.node_id);
+        if ((n >= 4 && n <= 9) || n === 19) fire = true;
+        if (n >= 10 && n <= 18) quake = true;
+      });
+      if (fire && quake) return "防火 / 防震";
+      return fire ? "防火" : (quake ? "防震" : "");
+    },
+    endingName(id) {
+      if (id === null || id === undefined || id === "") return "—";
+      const n = ENDING_MAP[String(id)];
+      return id + (n ? " · " + n : "");
+    },
+
+    async login() {
+      this.loginError = "";
+      this.loginForm.account = (this.loginForm.account || "").trim();   // 防止首尾空格导致账号不匹配
+      if (!this.loginForm.account || !this.loginForm.password) {
+        this.loginError = "请输入账号和密码";
+        return;
+      }
+      this.loginLoading = true;
+      try {
+        const d = await this.api("teacher/login", {
+          method: "POST",
+          body: JSON.stringify(this.loginForm),
+        });
+        if (!d || !d.token) {
+          this.loginError = "登录响应异常（未拿到令牌），请刷新页面后重试";
+          return;
+        }
+        this.auth = { teacher_id: d.teacher_id, token: d.token, name: d.name,
+                      account: d.account || this.loginForm.account, is_admin: d.is_admin ? 1 : 0 };
+        this.isAdmin = d.is_admin ? 1 : 0;
+        /* localStorage 可能被浏览器策略禁用，写失败也不能中断后续流程 */
+        try { localStorage.setItem("sws-teacher", JSON.stringify(this.auth)); } catch (err) {}
+        El.ElMessage.success("欢迎，" + d.name);
+        this.loadClasses();
+      } catch (e) {
+        if (e && e.name === "TypeError") {
+          this.loginError = "网络异常，连不上服务器，请检查网络后重试";
+        } else {
+          const msg = (e && e.message) || "登录失败";
+          this.loginError = msg === "账号或密码错误"
+            ? "账号或密码错误。教师账号默认是 teacher1（注意结尾的数字 1），密码区分大小写。"
+            : msg;
+        }
+      } finally {
+        this.loginLoading = false;
+      }
+    },
+
+    logout(silent) {
+      localStorage.removeItem("sws-teacher");
+      this.auth = null; this.classes = []; this.view = ""; this.curClass = null;
+      this.isAdmin = 0; this.overview = null; this.teachers = [];
+      if (!silent) El.ElMessage.info("已退出登录");
+    },
+
+    /* ---- 用服务端数据校正当前身份（刷新后防止 localStorage 里的 is_admin 过期） ---- */
+    async loadMe() {
+      try {
+        const d = await this.api("teacher/me");
+        this.auth = Object.assign({}, this.auth, { name: d.name, account: d.account, is_admin: d.is_admin });
+        this.isAdmin = d.is_admin ? 1 : 0;
+        try { localStorage.setItem("sws-teacher", JSON.stringify(this.auth)); } catch (e) {}
+      } catch (e) {}
+    },
+
+    async loadClasses() {
+      try {
+        const d = await this.api("teacher/myClass");
+        this.classes = d.classes;
+        if (!this.view && this.classes.length) this.openClass(this.classes[0]);
+      } catch (e) {}
+    },
+
+    async createClass() {
+      const { value } = await El.ElMessageBox.prompt("输入新班级名称（如：三年级2班）", "新建班级", {
+        confirmButtonText: "创建", cancelButtonText: "取消",
+        inputPattern: /\S{1,50}/, inputErrorMessage: "名称不能为空",
+      }).catch(() => ({ value: null }));
+      if (!value) return;
+      const d = await this.api("class/create", { method: "POST", body: JSON.stringify({ class_name: value.trim() }) });
+      El.ElMessage.success("班级已创建");
+      await this.loadClasses();
+      const c = this.classes.find(x => x.class_id === d.class_id);
+      if (c) this.openClass(c);
+    },
+
+    openClass(c) { this.curClass = c; this.view = "class"; this.loadRank(); },
+
+    async loadRank() {
+      if (!this.curClass) return;
+      this.rankLoading = true;
+      try {
+        const d = await this.api("class/rank?class_id=" + encodeURIComponent(this.curClass.class_id));
+        this.rank = d.rank;
+      } catch (e) {}
+      this.rankLoading = false;
+    },
+
+    /* ---- 删除班级（学生与历史成绩保留） ---- */
+    delClass(c) {
+      El.ElMessageBox.confirm(
+        "确定删除班级「" + c.class_name + "」吗？\n该班学生会移出班级，但他们的游戏成绩仍保留在数据库里。",
+        "删除班级",
+        { confirmButtonText: "删除", cancelButtonText: "取消", type: "warning" }
+      ).then(async () => {
+        try {
+          await this.api("class/delete", { method: "POST", body: JSON.stringify({ class_id: c.class_id }) });
+          El.ElMessage.success("班级已删除");
+          if (this.curClass && this.curClass.class_id === c.class_id) {
+            this.curClass = null; this.view = ""; this.rank = [];
+          }
+          await this.loadClasses();
+        } catch (e) {}
+      }).catch(() => {});
+    },
+
+    /* ---- 把学生移出班级（成绩仍保留，可再拉回来） ---- */
+    removeStudent(row) {
+      if (!this.curClass) return;
+      if (!row.student_id) return El.ElMessage.error("缺少学生标识，请刷新页面后重试");
+      El.ElMessageBox.confirm(
+        "确定把「" + row.student_name + "」移出「" + this.curClass.class_name + "」吗？\n历史成绩不会删除，之后可在「未归班学生」里重新拉入。",
+        "移出班级",
+        { confirmButtonText: "移出", cancelButtonText: "取消", type: "warning" }
+      ).then(async () => {
+        try {
+          await this.api("class/removeStudent", {
+            method: "POST",
+            body: JSON.stringify({ class_id: this.curClass.class_id, student_id: row.student_id }),
+          });
+          El.ElMessage.success("已移出班级");
+          this.loadRank();
+          this.loadClasses();
+        } catch (e) {}
+      }).catch(() => {});
+    },
+
+    /* ---- 修改当前登录教师的密码 ---- */
+    openChangePwd() {
+      this.pwdForm = { old: "", new: "", confirm: "" };
+      this.pwdError = "";
+      this.pwdShow = true;
+    },
+    async submitChangePwd() {
+      this.pwdError = "";
+      const f = this.pwdForm;
+      if (!f.old || !f.new) { this.pwdError = "请填写原密码与新密码"; return; }
+      const ruleErr = this.pwdRuleError(f.new);
+      if (ruleErr) { this.pwdError = ruleErr; return; }
+      if (f.new !== f.confirm) { this.pwdError = "两次输入的新密码不一致"; return; }
+      this.pwdLoading = true;
+      try {
+        await this.api("teacher/changePassword", {
+          method: "POST",
+          body: JSON.stringify({ old_password: f.old, new_password: f.new }),
+        });
+        this.pwdShow = false;
+        El.ElMessage.success("密码已修改，下次登录请使用新密码");
+      } catch (e) {
+        this.pwdError = (e && e.message) || "修改失败，请重试";
+      } finally {
+        this.pwdLoading = false;
+      }
+    },
+
+    async exportCsv() {
+      const q = "class/export?class_id=" + encodeURIComponent(this.curClass.class_id)
+              + "&with_phone=" + (this.withPhone ? 1 : 0);
+      try {
+        const res = await this.api(q);
+        const blob = await res.blob();
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "排名_" + this.curClass.class_name + "_" + new Date().toISOString().slice(0, 10) + ".csv";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      } catch (e) {}
+    },
+
+    async openUnbind() {
+      this.view = "unbind"; this.unbindSel = [];
+      this.unbindLoading = true;
+      try {
+        const d = await this.api("student/unbindList");
+        this.unbindList = d.students;
+      } catch (e) {}
+      this.unbindLoading = false;
+    },
+    async loadUnbind() { this.openUnbind(); },
+
+    async addStudents() {
+      const d = await this.api("class/addStudent", {
+        method: "POST",
+        body: JSON.stringify({
+          class_id: this.unbindTarget,
+          student_ids: this.unbindSel.map(s => s.student_id),
+        }),
+      });
+      El.ElMessage.success("已拉入 " + d.added + " 名学生");
+      this.loadClasses();
+      this.openUnbind();
+    },
+
+    async showDetail(recordId) {
+      this.detailShow = true; this.detail = null; this.detailLoading = true;
+      try {
+        this.detail = await this.api("class/studentDetail?record_id=" + encodeURIComponent(recordId));
+      } catch (e) { this.detailShow = false; }
+      this.detailLoading = false;
+    },
+
+    /* ================= 多教师：我的排行榜 ================= */
+    async openOverview() {
+      this.view = "overview";
+      this.overviewLoading = true;
+      try {
+        this.overview = await this.api("teacher/overview");
+      } catch (e) {
+        this.overview = null;
+      }
+      this.overviewLoading = false;
+    },
+    openClassById(cid) {
+      const c = this.classes.find(x => x.class_id === cid);
+      if (c) this.openClass(c);
+      else El.ElMessage.warning("班级列表已变化，请刷新后重试");
+    },
+
+    /* ================= 多教师：账号管理（仅管理员） ================= */
+    openTeachers() {
+      if (!this.isAdmin) return El.ElMessage.warning("只有管理员可以管理教师账号");
+      this.view = "teachers";
+      this.loadTeachers();
+    },
+    async loadTeachers() {
+      this.teachersLoading = true;
+      try {
+        const d = await this.api("teacher/list");
+        this.teachers = d.teachers;
+      } catch (e) {
+        if (e && /管理员/.test(e.message || "")) this.view = "overview";
+      }
+      this.teachersLoading = false;
+    },
+    openTeacherForm(row) {
+      this.tForm = {
+        show: true, loading: false, error: "",
+        teacher_id: row ? row.teacher_id : "",
+        account: row ? row.account : "",
+        teacher_name: row ? row.teacher_name : "",
+        password: "",
+        is_admin: row ? (row.is_admin ? 1 : 0) : 0,
+      };
+    },
+    async submitTeacherForm() {
+      const f = this.tForm;
+      f.error = "";
+      if (!f.teacher_id) {
+        const acc = (f.account || "").trim();
+        if (!/^[A-Za-z0-9_@.\-]{3,50}$/.test(acc)) {
+          f.error = "账号需为 3~50 位字母、数字或 _ @ . -";
+          return;
+        }
+        const pwdErr = this.pwdRuleError(f.password);
+        if (pwdErr) { f.error = "初始" + pwdErr; return; }
+      }
+      if (!(f.teacher_name || "").trim()) { f.error = "请填写教师姓名"; return; }
+      f.loading = true;
+      try {
+        if (f.teacher_id) {
+          await this.api("teacher/update", {
+            method: "POST",
+            body: JSON.stringify({
+              teacher_id: f.teacher_id,
+              teacher_name: f.teacher_name.trim(),
+              is_admin: f.is_admin ? 1 : 0,
+            }),
+          });
+          El.ElMessage.success("已保存");
+        } else {
+          await this.api("teacher/create", {
+            method: "POST",
+            body: JSON.stringify({
+              account: f.account.trim(),
+              password: f.password,
+              teacher_name: f.teacher_name.trim(),
+              is_admin: f.is_admin ? 1 : 0,
+            }),
+          });
+          El.ElMessage.success("教师账号已创建");
+        }
+        f.show = false;
+        await this.loadTeachers();
+        await this.loadMe();
+      } catch (e) {
+        f.error = (e && e.message) || "保存失败，请重试";
+      } finally {
+        f.loading = false;
+      }
+    },
+    openResetPwd(row) {
+      this.resetForm = {
+        show: true, loading: false, error: "",
+        teacher_id: row.teacher_id,
+        name: row.teacher_name + "（" + row.account + "）",
+        password: "",
+      };
+    },
+    async submitResetPwd() {
+      const f = this.resetForm;
+      f.error = "";
+      const pwdErr = this.pwdRuleError(f.password);
+      if (pwdErr) { f.error = pwdErr; return; }
+      f.loading = true;
+      try {
+        await this.api("teacher/resetPassword", {
+          method: "POST",
+          body: JSON.stringify({ teacher_id: f.teacher_id, new_password: f.password }),
+        });
+        f.show = false;
+        El.ElMessage.success("密码已重置，请告知该教师用新密码登录");
+      } catch (e) {
+        f.error = (e && e.message) || "重置失败，请重试";
+      } finally {
+        f.loading = false;
+      }
+    },
+    toggleAdmin(row) {
+      const make = row.is_admin ? 0 : 1;
+      El.ElMessageBox.confirm(
+        (make ? "把「" : "取消「") + row.teacher_name + "」的管理员身份" + (make ? "？" : "？取消后他将无法管理其他教师账号。"),
+        "调整管理员",
+        { confirmButtonText: "确定", cancelButtonText: "取消", type: "warning" }
+      ).then(async () => {
+        try {
+          await this.api("teacher/update", {
+            method: "POST",
+            body: JSON.stringify({ teacher_id: row.teacher_id, teacher_name: row.teacher_name, is_admin: make }),
+          });
+          El.ElMessage.success(make ? "已设为管理员" : "已取消管理员");
+          await this.loadTeachers();
+          await this.loadMe();
+        } catch (e) {}
+      }).catch(() => {});
+    },
+    delTeacher(row) {
+      El.ElMessageBox.confirm(
+        "确定删除教师账号「" + row.teacher_name + "（" + row.account + "）」吗？\n"
+        + "该账号将无法再登录。若名下还有班级，需要先删除班级。",
+        "删除教师",
+        { confirmButtonText: "删除", cancelButtonText: "取消", type: "warning" }
+      ).then(async () => {
+        try {
+          await this.api("teacher/delete", { method: "POST", body: JSON.stringify({ teacher_id: row.teacher_id }) });
+          El.ElMessage.success("教师账号已删除");
+          await this.loadTeachers();
+        } catch (e) {}
+      }).catch(() => {});
+    },
+
+    /* ---- 密码复杂度规则：至少 6 位，且必须同时包含字母、数字和 @ ---- */
+    pwdRuleError(pwd) {
+      const s = String(pwd || "");
+      if (s.length < 6) return "密码至少 6 位（要求：字母 + 数字 + @）";
+      const miss = [];
+      if (!/[A-Za-z]/.test(s)) miss.push("字母");
+      if (!/[0-9]/.test(s)) miss.push("数字");
+      if (s.indexOf("@") === -1) miss.push("@");
+      if (miss.length) return "密码必须同时包含字母、数字和 @，当前缺少：" + miss.join("、");
+      return "";
+    },
+    /* 实时规则清单：返回 4 项是否满足，用于弹窗里的打勾提示 */
+    pwdChecks(pwd) {
+      const s = String(pwd || "");
+      return [
+        { k: "长度 ≥ 6 位", ok: s.length >= 6 },
+        { k: "含字母", ok: /[A-Za-z]/.test(s) },
+        { k: "含数字", ok: /[0-9]/.test(s) },
+        { k: "含 @", ok: s.indexOf("@") !== -1 },
+      ];
+    },
+
+    fmtDur(sec) {
+      const m = Math.floor(sec / 60), s = sec % 60;
+      return m > 0 ? m + "分" + String(s).padStart(2, "0") + "秒" : s + "秒";
+    },
+  },
+});
+
+app.use(ElementPlus, typeof ElementPlusLocaleZhCn !== "undefined" ? { locale: ElementPlusLocaleZhCn } : {});
+if (typeof ElementPlusIconsVue !== "undefined") {
+  for (const [name, comp] of Object.entries(ElementPlusIconsVue)) app.component(name, comp);
+}
+app.mount("#app");
+</script>
+</body>
+</html>
