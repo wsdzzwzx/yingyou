@@ -161,6 +161,11 @@
 
   .body-wrap{ flex:1; display:flex; min-height:0; }
 
+  /* 全屏时隐藏左侧栏，把宽度让给排行表；退出全屏自动恢复 */
+  .layout.fs-mode .side{ display:none; }
+  /* 双保险：即使状态同步失败，浏览器全屏态下也不显示侧栏 */
+  html:fullscreen .side, html:-webkit-full-screen .side{ display:none; }
+
   /* 侧栏 */
   .side{
     flex:none; width:226px; padding:16px 12px 18px;
@@ -469,7 +474,7 @@
   </div>
 
   <!-- ============ 主框架 ============ -->
-  <div class="layout" v-else>
+  <div class="layout" :class="{ 'fs-mode': isFull }" v-else>
 
     <header class="topbar">
       <div class="tb-side">
@@ -837,6 +842,8 @@
                 </el-select>
                 <el-button type="primary" size="small" :disabled="!unbindSel.length || !unbindTarget"
                            @click="addStudents">拉入班级（{{ unbindSel.length }}）</el-button>
+                <el-button v-if="isAdmin" type="danger" size="small" :disabled="!unbindSel.length"
+                           @click="delUnbind(unbindSel)">删除（{{ unbindSel.length }}）</el-button>
                 <el-button size="small" @click="loadUnbind" :loading="unbindLoading">刷新</el-button>
                 <el-checkbox v-model="unbindOnlyMine" size="small" style="margin-left:6px">
                   只看与我班级同名的
@@ -862,6 +869,11 @@
                 <el-table-column prop="play_count" label="游戏次数" width="90" align="center"></el-table-column>
                 <el-table-column prop="create_time" label="首次进入时间" width="170">
                   <template #default="s"><span class="num">{{ s.row.create_time }}</span></template>
+                </el-table-column>
+                <el-table-column v-if="isAdmin" label="操作" width="72" align="center">
+                  <template #default="s">
+                    <el-button type="danger" link size="small" @click="delUnbind([s.row])">删除</el-button>
+                  </template>
                 </el-table-column>
               </el-table>
             </div>
@@ -1343,6 +1355,30 @@ const app = createApp({
     },
 
     /* ---- 把学生移出班级（成绩仍保留，可再拉回来） ---- */
+    /* ---- 删除未归班学生（仅管理员）：连同其全部游戏记录永久删除 ---- */
+    delUnbind(rows) {
+      if (!this.isAdmin) return El.ElMessage.error("只有管理员可以删除学生");
+      rows = (rows || []).filter(function (r) { return r && r.student_id; });
+      if (!rows.length) return El.ElMessage.warning("请先勾选要删除的学生");
+      const names = rows.map(function (r) { return r.student_name; }).join("、");
+      El.ElMessageBox.confirm(
+        "确定删除 " + rows.length + " 名未归班学生：「" + names + "」吗？\n"
+        + "他们的全部游戏记录（轨迹、成绩、结局）将被永久删除，不可恢复！",
+        "删除学生",
+        { confirmButtonText: "永久删除", cancelButtonText: "取消", type: "warning" }
+      ).then(async () => {
+        try {
+          const d = await this.api("student/deleteUnbind", {
+            method: "POST",
+            body: JSON.stringify({ student_ids: rows.map(function (r) { return r.student_id; }) }),
+          });
+          const n = d && d.deleted != null ? d.deleted : rows.length;
+          El.ElMessage.success("已删除 " + n + " 名学生" + (d && d.skipped ? "（另有 " + d.skipped + " 人已归班，已跳过）" : ""));
+          this.loadUnbind();
+        } catch (e) {}
+      }).catch(() => {});
+    },
+
     removeStudent(row) {
       if (!this.curClass) return;
       if (!row.student_id) return El.ElMessage.error("缺少学生标识，请刷新页面后重试");

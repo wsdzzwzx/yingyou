@@ -28,7 +28,7 @@ body {
 }
 .hidden { display: none !important; }
 
-.screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+.screen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; }
 
 /* ==================== 平台动效库（自 tdream.qq.com 复刻） ==================== */
 @keyframes qte-enter { 0% { transform: scale(1.4); opacity: 0; } 60% { transform: scale(.95); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
@@ -52,7 +52,7 @@ body {
   overflow: hidden;
 }
 .hero-bg {
-  position: absolute; inset: 0;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
   background-image: url("../assets/tdream/cover.png");
   background-size: cover; background-position: center;
   transform: scale(1.04);
@@ -60,7 +60,7 @@ body {
 }
 @keyframes heroDrift { from { transform: scale(1.04) translateX(-1.2%); } to { transform: scale(1.04) translateX(1.2%); } }
 .hero-shade {
-  position: absolute; inset: 0;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
   background:
     linear-gradient(to top, rgba(5,6,10,.94) 0%, rgba(5,6,10,.55) 34%, rgba(5,6,10,.12) 62%, rgba(5,6,10,.42) 100%),
     linear-gradient(to right, rgba(5,6,10,.62), rgba(5,6,10,.06) 55%);
@@ -68,6 +68,7 @@ body {
 .start-inner {
   position: relative; height: 100%; max-width: 1080px; margin: 0 auto;
   display: flex; flex-direction: column; justify-content: flex-end;
+  /* win7-compat */ padding: 4vh 5vw;
   padding: clamp(16px, 4vh, 44px) clamp(18px, 5vw, 56px);
   overflow-y: auto; text-align: left;
 }
@@ -83,17 +84,20 @@ body {
 .game-title {
   margin-top: 14px;
   font-family: var(--font-choice);
+  /* win7-compat */ font-size: 6vw; font-weight: 800; letter-spacing: 3px;
   font-size: clamp(30px, 6vw, 56px); font-weight: 800; letter-spacing: 3px;
   color: #fff;
   text-shadow: 0 4px 30px rgba(0,0,0,.6);
   animation: fadeSlideUp .55s .06s ease-out both;
 }
 .hero-meta {
+  /* win7-compat */ margin-top: 8px; color: rgba(255,255,255,.72); font-size: 2vw;
   margin-top: 8px; color: rgba(255,255,255,.72); font-size: clamp(12px, 2vw, 14px);
   animation: fadeSlideUp .55s .12s ease-out both;
 }
 .hero-desc {
   margin-top: 10px; max-width: 640px;
+  /* win7-compat */ color: rgba(255,255,255,.6); font-size: 1.9vw; line-height: 1.8;
   color: rgba(255,255,255,.6); font-size: clamp(12px, 1.9vw, 14px); line-height: 1.8;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   animation: fadeSlideUp .55s .18s ease-out both;
@@ -116,6 +120,7 @@ body {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 14px 34px; border: none; border-radius: 999px;
   background: #fff; color: #0c0d12;
+  /* win7-compat */ font-size: 2.4vw; font-weight: 700; font-family: inherit;
   font-size: clamp(15px, 2.4vw, 18px); font-weight: 700; font-family: inherit;
   cursor: pointer; letter-spacing: 2px;
   transition: transform .18s ease-out, box-shadow .18s ease-out;
@@ -163,6 +168,7 @@ body {
 #hud {
   position: absolute; top: 0; left: 0; right: 0; z-index: 60;
   display: flex; align-items: center; gap: 10px;
+  /* win7-compat */ padding: calc(0px + 10px) 2.2vw 34px;
   padding: calc(env(safe-area-inset-top, 0px) + 10px) clamp(12px, 2.2vw, 22px) 34px;
   background: linear-gradient(180deg, rgba(6,8,12,.78), rgba(6,8,12,.38) 52%, rgba(6,8,12,0));
   color: #f2efe6; pointer-events: none;
@@ -170,6 +176,7 @@ body {
 #hud > * { pointer-events: auto; }
 #hud-title {
   flex: 1; min-width: 0; text-align: center; font-weight: 600; letter-spacing: .3px;
+  /* win7-compat */ font-size: 1.5vw; color: #fff;
   font-size: clamp(13px, 1.5vw, 17px); color: #fff;
   text-shadow: 0 1px 8px rgba(0,0,0,.85);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
@@ -177,6 +184,7 @@ body {
 .hud-btn {
   background: rgba(12,14,18,.5); color: #f0ece0;
   border: 1px solid rgba(232,201,143,.3); border-radius: 999px;
+  /* win7-compat */ padding: 8px 15px; font-size: 1.2vw; font-weight: 600;
   padding: 8px 15px; font-size: clamp(12px, 1.2vw, 14px); font-weight: 600;
   cursor: pointer; font-family: inherit; white-space: nowrap;
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -204,7 +212,9 @@ body {
 /* 首页：浮在右上角，不占内容流 */
 #screen-start > .tts-toggle {
   position: absolute; z-index: 40;
+  /* win7-compat */ top: calc(0px + 16px);
   top: calc(env(safe-area-inset-top, 0px) + 16px);
+  /* win7-compat */ right: 3vw;
   right: clamp(14px, 3vw, 28px);
 }
 /* HUD 内：跟随胶囊按钮尺寸 */
@@ -213,14 +223,14 @@ body {
 
 /* 舞台铺满整个视口：手机 / 平板 / 电脑都吃满屏幕，不再被 1280px 或 16:9 卡片限制 */
 #stage {
-  position: absolute; inset: 0; width: 100%; height: 100%;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;
   background: #000; overflow: hidden; touch-action: none;
 }
 /* 真全屏 / 伪全屏（iOS Safari 不支持元素全屏时的降级）：保持满屏、去掉圆角 */
 #screen-player.player-fs { background: #000; }
 #screen-player.player-fs #stage { border-radius: 0; }
 body.pseudo-fs { overflow: hidden; }
-body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+body.pseudo-fs #screen-player { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100vw; height: 100vh; }
 
 #video { width: 100%; height: 100%; object-fit: contain; display: block; position: relative; z-index: 1; background: #0b0d12; }
 /* 全屏横屏：视频裁切铺满整屏（不留黑边）；竖屏仍用 contain，避免大幅裁掉画面 */
@@ -229,7 +239,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* 视频加载占位：首帧封面（poster）之上盖一层转圈提示，避免弱网下长时间纯黑屏。
    用 visibility 而非 display 控制，才能让"延迟 0.2s 淡入"生效——加载很快时不会闪一下白圈。 */
 #video-loading {
-  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 3; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
   background: radial-gradient(circle at 50% 45%, rgba(0,0,0,.18), rgba(0,0,0,.52));
   opacity: 0; visibility: hidden;
@@ -252,17 +262,17 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 
 /* 全景层：Pano720 WebGL 画布铺满；CSS 回退方案用背景图拖动 */
 #pano {
-  position: absolute; inset: 0; z-index: 2; overflow: hidden;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 2; overflow: hidden;
   background-repeat: repeat-x; background-size: auto 190%; background-position: 50% 50%;
   cursor: grab; touch-action: none;
 }
 #pano:active { cursor: grabbing; }
-.pano720-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+.pano720-canvas { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 .pano720-canvas:active { cursor: grabbing; }
 
 /* 画面坐标层：始终与视频显示区域严格对齐 */
 #fx { position: absolute; z-index: 3; pointer-events: none; }
-#fx-target { position: absolute; inset: 0; pointer-events: none; }
+#fx-target { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
 
 .drag-zone {
   position: absolute; border: 3px dashed rgba(255,255,255,.85); border-radius: 14px;
@@ -296,8 +306,10 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* 提示气泡 */
 #toast {
   position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  /* win7-compat */ max-width: 620px; z-index: 30; pointer-events: none;
   max-width: min(84%, 620px); z-index: 30; pointer-events: none;
   padding: 16px 22px; border-radius: 16px; text-align: center;
+  /* win7-compat */ font-size: 2.6vw; font-weight: 700; line-height: 1.6;
   font-size: clamp(15px, 2.6vw, 20px); font-weight: 700; line-height: 1.6;
   color: #fff; background: rgba(20, 15, 40, .88); backdrop-filter: blur(6px);
   box-shadow: 0 14px 40px rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.16);
@@ -308,7 +320,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -46%) scale(.94); } }
 
 /* 成功/失败闪屏与抖动 */
-.flash { position: absolute; inset: 0; z-index: 25; pointer-events: none; animation: flashOut .45s ease-out; }
+.flash { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 25; pointer-events: none; animation: flashOut .45s ease-out; }
 .flash.red { background: radial-gradient(circle at 50% 50%, rgba(224,52,60,.5), rgba(224,52,60,.12)); }
 .flash.green { background: radial-gradient(circle at 50% 50%, rgba(60,200,120,.42), rgba(60,200,120,.08)); }
 @keyframes flashOut { from { opacity: 1; } to { opacity: 0; } }
@@ -321,13 +333,13 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   80% { transform: translateX(3px); }
 }
 
-#overlay { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+#overlay { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 20; pointer-events: none; }
 #overlay > * { pointer-events: auto; }
 
 /* ==================== 交互层：QTE（平台动效复刻） ==================== */
 /* 径向聚焦遮罩：判定点亮、四周暗（--qx/--qy 由引擎写入） */
 .qte-wrap {
-  position: absolute; inset: 0; touch-action: none;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; touch-action: none;
   background: radial-gradient(circle at var(--qx, 50%) var(--qy, 55%),
     rgba(11,14,17,.12) 0%, rgba(11,14,17,.3) 30%, rgba(11,14,17,.65) 70%, rgba(11,14,17,.8) 100%);
   animation: qteWrapIn .3s ease-out;
@@ -335,6 +347,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 @keyframes qteWrapIn { from { opacity: 0; } }
 .qte-prompt {
   position: absolute; top: 7%; left: 50%; transform: translateX(-50%);
+  /* win7-compat */ color: #fff; font-size: 3.4vw; font-weight: 700;
   color: #fff; font-size: clamp(18px, 3.4vw, 26px); font-weight: 700;
   text-shadow: 0 2px 12px rgba(0,0,0,.65); letter-spacing: 2px; text-align: center;
   padding: 0 16px; white-space: nowrap;
@@ -361,9 +374,11 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 .qte-btn {
+  /* win7-compat */ width: 9.5vw; height: 9.5vw; border-radius: 50%;
   width: clamp(58px, 9.5vw, 74px); height: clamp(58px, 9.5vw, 74px); border-radius: 50%;
   border: 1.5px solid rgba(198,163,107,.6); cursor: pointer;
   background: rgba(11, 14, 17, .9);
+  /* win7-compat */ color: #E8C98F; font-size: 4.2vw; font-weight: 800; font-family: inherit;
   color: #E8C98F; font-size: clamp(24px, 4.2vw, 32px); font-weight: 800; font-family: inherit;
   box-shadow: 0 0 14px 2px rgba(198,163,107,.16), inset 0 0 10px rgba(0,0,0,.3);
   display: flex; align-items: center; justify-content: center; line-height: 1;
@@ -376,8 +391,10 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 .qte-btn.swipe:active { cursor: grabbing; }
 /* 长按表盘（平台样式）：长按! + 大号百分比 + 秒数，竖排 */
 .qte-btn.hold {
+  /* win7-compat */ width: 12.5vw; height: 12.5vw;
   width: clamp(78px, 12.5vw, 100px); height: clamp(78px, 12.5vw, 100px);
   flex-direction: column; gap: 3px;
+  /* win7-compat */ font-size: 2.9vw;
   font-size: clamp(17px, 2.9vw, 23px);
 }
 .qte-btn .qte-pct {
@@ -385,6 +402,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   color: #E8C98F; font-variant-numeric: tabular-nums;
 }
 .qte-btn .qte-hsec {
+  /* win7-compat */ font-size: 1.6vw; font-weight: 600; line-height: 1;
   font-size: clamp(10px, 1.6vw, 13px); font-weight: 600; line-height: 1;
   color: rgba(255,255,255,.78); font-variant-numeric: tabular-nums;
 }
@@ -395,7 +413,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   position: relative; display: flex; align-items: center; justify-content: center;
 }
 .qte-ring {
-  position: absolute; inset: -22%; border-radius: 50%;
+  position: absolute; top: -22%; right: -22%; bottom: -22%; left: -22%; border-radius: 50%;
   border: 2px solid rgba(232,201,143,.4); pointer-events: none;
   animation: ig-pulse-ring 1.6s ease-in-out infinite;
 }
@@ -435,6 +453,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 }
 /* 「点击!」/「长按!」：小号横排单行，不继承大号箭头字号 */
 .qte-btn .qte-tapl {
+  /* win7-compat */ font-size: 1.35vw; font-weight: 600;
   font-size: clamp(9px, 1.35vw, 11px); font-weight: 600;
   line-height: 1; letter-spacing: .5px; text-align: center;
   color: rgba(232,201,143,.9); white-space: nowrap;
@@ -442,6 +461,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* 按钮正下方的秒数倒计时（平台 "7.8s" 样式） */
 .qte-count {
   position: absolute; transform: translate(-50%, 44px);
+  /* win7-compat */ color: rgba(255,255,255,.92); font-size: 2.2vw;
   color: rgba(255,255,255,.92); font-size: clamp(13px, 2.2vw, 17px);
   font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,.7);
   pointer-events: none; font-variant-numeric: tabular-nums;
@@ -464,6 +484,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* 平台 trajectory 型互动：飞来的 NPC 头像 */
 .qte-avatar {
   position: absolute; bottom: 66%; left: 50%; transform: translateX(-50%);
+  /* win7-compat */ width: 13vw; height: auto; max-height: 24vh; object-fit: contain;
   width: clamp(72px, 13vw, 110px); height: auto; max-height: 24vh; object-fit: contain;
   pointer-events: none; filter: drop-shadow(0 6px 16px rgba(0,0,0,.55));
   animation: ig-particle-float 1.4s ease-in-out infinite;
@@ -471,6 +492,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 
 .qte-track {
   position: absolute; bottom: 9%; left: 50%; transform: translateX(-50%);
+  /* win7-compat */ width: 380px; height: 9px; border-radius: 99px;
   width: min(62%, 380px); height: 9px; border-radius: 99px;
   background: rgba(255,255,255,.22); overflow: hidden;
   animation: qteWrapIn .3s ease-out both;
@@ -484,7 +506,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 
 /* ==================== 交互层：选项（平台黑石板铜边风格） ==================== */
 .choice-wrap {
-  position: absolute; inset: 0; z-index: 21;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 21;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
   font-family: var(--font-choice);
   animation: choiceIn .5s ease-out both;
@@ -502,12 +524,14 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 }
 @keyframes choiceUp { from { transform: translateY(5%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .choice-title {
+  /* win7-compat */ color: #fff; font-size: 2.6vh; font-weight: 700;
   color: #fff; font-size: clamp(15px, 2.6vh, 21px); font-weight: 700;
   text-shadow: 0 2px 8px rgba(0,0,0,.65); text-align: center; padding: 0 12px;
   line-height: 1.5; margin-bottom: 1.2vh;
 }
 .choice-deco {
   display: flex; align-items: center; gap: 10px; margin-bottom: 2vh;
+  /* win7-compat */ color: rgba(255,255,255,.55); font-size: 2vh;
   color: rgba(255,255,255,.55); font-size: clamp(12px, 2vh, 15px);
 }
 /* 触屏"点此朗读"：微信里自动播放常被拦，点一下必定出声 */
@@ -517,6 +541,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   border-radius: 999px; cursor: pointer;
   background: rgba(20,24,32,.55); color: #e8c98f;
   border: 1px solid rgba(232,201,143,.45);
+  /* win7-compat */ font-size: 1.9vh; letter-spacing: .06em;
   font-size: clamp(12px, 1.9vh, 14px); letter-spacing: .06em;
   -webkit-tap-highlight-color: transparent;
   transition: background .18s ease, transform .12s ease;
@@ -527,6 +552,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 .choice-count {
   display: inline-flex; align-items: center; gap: 5px;
   border-radius: 999px; padding: .4vh 1vw;
+  /* win7-compat */ color: var(--choice-gold); font-size: 1.9vh;
   color: var(--choice-gold); font-size: clamp(12px, 1.9vh, 14px);
   background: rgba(160, 130, 70, .12); border: 1px solid rgba(160, 130, 70, .25);
 }
@@ -537,6 +563,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   background: transparent url("../assets/tdream/choice-btn-bg.png") no-repeat 0 0 / 100% 100%;
   border: none; cursor: pointer;
   color: var(--choice-ink); font-family: var(--font-choice);
+  /* win7-compat */ font-size: 1.9vh; font-weight: 600;
   font-size: clamp(12px, 1.9vh, 17px); font-weight: 600;
   /* 横向一行等宽排布；石板底图固定宽高比（= PNG 原始 1354:449），不拉伸变形 */
   flex: 1 1 0; min-width: 0; max-width: 300px;
@@ -579,6 +606,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   .choice-inner { padding-bottom: 11vh; }
 }
 .choice-timer {
+  /* win7-compat */ margin-top: 1.6vh; width: 420px; height: 6px; border-radius: 99px;
   margin-top: 1.6vh; width: min(70%, 420px); height: 6px; border-radius: 99px;
   background: rgba(255,255,255,.25); overflow: hidden;
 }
@@ -597,6 +625,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* 全景底部提示 + 一圈进度条（平台样式） */
 .pano-tip {
   position: absolute; left: 50%; bottom: 17%; transform: translateX(-50%);
+  /* win7-compat */ color: #E8C98F; font-size: 2.6vw; letter-spacing: 3px;
   color: #E8C98F; font-size: clamp(15px, 2.6vw, 21px); letter-spacing: 3px;
   font-family: "Noto Serif SC", "Source Han Serif SC", STSong, serif;
   text-shadow: 0 1px 8px rgba(0,0,0,.85);
@@ -605,6 +634,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 .pano-tip .dash { color: rgba(232,201,143,.65); margin: 0 10px; }
 .pano-progress {
   position: absolute; left: 50%; bottom: 9.5%; transform: translateX(-50%);
+  /* win7-compat */ width: 430px; height: 15px; border-radius: 999px;
   width: min(46%, 430px); height: 15px; border-radius: 999px;
   background: rgba(16, 20, 16, .78);
   border: 1px solid rgba(232,201,143,.35);
@@ -625,6 +655,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* ==================== 安全区调整互动（平台 safe_zone） ==================== */
 .sz-bar {
   position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%);
+  /* win7-compat */ width: 640px; height: 46px; border-radius: 999px;
   width: min(60%, 640px); height: 46px; border-radius: 999px;
   background: linear-gradient(180deg, #17332C 0%, #0E211C 55%, #0A1915 100%);
   border: 2px solid rgba(198,163,107,.75);
@@ -635,6 +666,7 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
   border-radius: 999px;
   background: linear-gradient(180deg, #A05248 0%, #7E3B34 100%);
   border: 1.5px solid rgba(232,201,143,.5);
+  /* win7-compat */ color: #F3E6CE; font-size: 1.8vw; font-weight: 700;
   color: #F3E6CE; font-size: clamp(11px, 1.8vw, 14px); font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   letter-spacing: 2px; text-shadow: 0 1px 2px rgba(0,0,0,.5);
@@ -658,10 +690,12 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 .sz-btn-hold.sz-r { right: 3%; }
 .sz-btn {
   pointer-events: auto;
+  /* win7-compat */ width: 8.6vw; height: 8.6vw;
   width: clamp(62px, 8.6vw, 84px); height: clamp(62px, 8.6vw, 84px);
   border-radius: 50%; cursor: pointer;
   background: radial-gradient(circle at 35% 30%, #3E8A78 0%, #1E5C4D 60%, #123B31 100%);
   border: 2.5px solid rgba(198,163,107,.85);
+  /* win7-compat */ color: #F3E6CE; font-size: 4vw; font-weight: 900; line-height: 1;
   color: #F3E6CE; font-size: clamp(26px, 4vw, 38px); font-weight: 900; line-height: 1;
   box-shadow: 0 0 16px rgba(46,138,116,.35), inset 0 0 10px rgba(0,0,0,.35);
   display: inline-flex; align-items: center; justify-content: center;
@@ -671,16 +705,19 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 .sz-btn:hover { filter: brightness(1.15); }
 .sz-btn:active { transform: scale(.92); }
 .sz-btn-label {
+  /* win7-compat */ margin-top: 8px; color: #F3E6CE; font-size: 2vw;
   margin-top: 8px; color: #F3E6CE; font-size: clamp(12px, 2vw, 15px);
   font-weight: 600; letter-spacing: 2px;
   text-shadow: 0 1px 4px rgba(0,0,0,.8);
 }
 .sz-count {
   position: absolute; top: 11%; right: 7%;
+  /* win7-compat */ width: 8vw; height: 8vw;
   width: clamp(58px, 8vw, 76px); height: clamp(58px, 8vw, 76px);
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, rgba(46,138,116,.92), rgba(18,59,49,.94));
   border: 2px solid rgba(232,201,143,.8);
+  /* win7-compat */ color: #fff; font-size: 2.4vw; font-weight: 800;
   color: #fff; font-size: clamp(15px, 2.4vw, 19px); font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 0 14px rgba(46,138,116,.4), 0 3px 10px rgba(0,0,0,.4);
@@ -729,11 +766,12 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 /* ==================== 网络版：身份录入弹窗 ====================
    视觉沿用游戏选择面板的黑石板 + 金描边风格，覆盖全屏，未确认前进不了游戏正文 */
 .id-overlay {
-  position: fixed; inset: 0; z-index: 200;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200;
   display: flex; align-items: center; justify-content: center;
   background: rgba(5, 8, 12, .78); backdrop-filter: blur(3px);
 }
 .id-panel {
+  /* win7-compat */ width: 420px; max-height: 88vh; overflow: auto;
   width: min(420px, 88vw); max-height: 88vh; overflow: auto;
   background: linear-gradient(160deg, #17231d, #0e1613);
   border: 1px solid rgba(232, 201, 143, .55);
@@ -764,3 +802,25 @@ body.pseudo-fs #screen-player { position: fixed; inset: 0; width: 100vw; height:
 }
 .id-btn:active { transform: scale(.98); }
 .id-btn:disabled { opacity: .6; }
+
+/* ==================== Win7 老内核兜底（html.no-flexgap / html.no-aspect 由 JS 检测注入） ==================== */
+html.no-flexgap .hero-badge > * + * { margin-left: 8px; }
+html.no-flexgap .hero-stats > * + * { margin-left: 10px; margin-top: 8px; }
+html.no-flexgap .hero-stat > * + * { margin-left: 6px; }
+html.no-flexgap .btn-play > * + * { margin-left: 10px; }
+html.no-flexgap .chapter-list > * + * { margin-left: 12px; margin-top: 10px; }
+html.no-flexgap .chapter-btn > * + * { margin-left: 12px; }
+html.no-flexgap #hud > * + * { margin-left: 10px; }
+html.no-flexgap .tts-toggle > * + * { margin-left: 6px; }
+html.no-flexgap #video-loading > * + * { margin-top: 14px; }
+html.no-flexgap .qte-btn.hold > * + * { margin-top: 3px; }
+html.no-flexgap .qte-btn.swipe > * + * { margin-top: 1px; }
+html.no-flexgap .choice-deco > * + * { margin-left: 10px; }
+html.no-flexgap .choice-read > * + * { margin-left: 6px; }
+html.no-flexgap .choice-count > * + * { margin-left: 5px; }
+html.no-flexgap .choice-options > * + * { margin-left: 1.2vw; }
+html.no-flexgap .ending-actions > * + * { margin-top: 10px; }
+html.no-flexgap .id-row > * + * { margin-left: 10px; }
+/* aspect-ratio 不支持时石板按钮高度兜底（Win7 桌面端宽度≥1024，按钮最宽 300px → 高约 100px） */
+html.no-aspect .choice-btn { min-height: 96px; height: auto; }
+html.no-aspect .choice-btn .lab { max-width: 240px; }

@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Win7 老内核兼容垫片：pointer 事件 + flex-gap / aspect-ratio 能力检测 -->
+<script src="js/compat.js"></script>
 <title>安全小卫士大闯关</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="assets/favicon.svg">
@@ -17,7 +19,7 @@
   <div class="hero-shade"></div>
   <button id="tts-toggle-home" class="tts-toggle" type="button" aria-pressed="true">🔊 朗读开</button>
   <div class="start-inner">
-    
+    <div class="hero-badge"></div>
     <h1 class="game-title">安全小卫士大闯关</h1>
     <p class="hero-meta">安全教育 · 短篇（5~10 分钟）</p>
     <p class="hero-desc">安全吉祥物"安安"来到小学，带领主角在防火与防震演练中闯关。通过观察环境、做出选择、完成躲闪挑战，最终获得"安全小卫士"徽章，掌握关键的安全逃生知识。</p>

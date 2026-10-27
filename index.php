@@ -41,6 +41,7 @@ $routes = array(
     'POST /api/teacher/delete'      => 'teacher_delete',
     'POST /api/class/create'        => 'class_create',
     'GET /api/student/unbindList'   => 'student_unbindList',
+    'POST /api/student/deleteUnbind' => 'student_deleteUnbind',
     'POST /api/class/addStudent'    => 'class_addStudent',
     'GET /api/class/rank'           => 'class_rank',
     'GET /api/class/studentDetail'  => 'class_studentDetail',

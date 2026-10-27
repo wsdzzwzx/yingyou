@@ -1,0 +1,50 @@
+# 安全教育互动影游网络版 — Apache 配置（缓存 + 伪静态）
+# 放在项目目录（/yingyou/anquan/）下即可生效，需要 AllowOverride All（宝塔默认开启）。
+# 需开启 mod_rewrite（宝塔默认启用）。
+
+# ==================== 0. 默认首页必须是 index.html ====================
+# index.php 只是 /api/* 的后端路由，不是页面入口。
+# 若这里不指定，Apache 可能优先执行 index.php，导致访问目录时报错或返回 JSON。
+DirectoryIndex index.html
+
+# ==================== 1. 伪静态：/api 与 /exports 统一交给 PHP 入口 ====================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(api|exports)(/.*)?$ index.php [QSA,L]
+</IfModule>
+
+# ==================== 2. 缓存：素材长缓存，代码不缓存 ====================
+<IfModule mod_headers.c>
+  <FilesMatch "\.(mp4|mp3|wav|png|jpg|jpeg|svg)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(html|js|css|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# ==================== 3. 压缩 ====================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# ==================== 4. 安全：禁止访问后端源码与 SQL ====================
+# Apache 2.4（宝塔默认）走 authz_core，2.2 走 mod_access_compat，两种都写一份
+<IfModule mod_authz_core.c>
+  <FilesMatch "\.(sql|md)$">
+    Require all denied
+  </FilesMatch>
+  <Files "config.php">
+    Require all denied
+  </Files>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  <FilesMatch "\.(sql|md)$">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+  <Files "config.php">
+    Order allow,deny
+    Deny from all
+  </Files>
+</IfModule>
