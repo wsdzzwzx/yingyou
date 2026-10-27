@@ -1,0 +1,7 @@
+1、安装php环境，如apache或者tomcat
+2、数据库是mysql，账号是anquan,密码是wstx@123
+3、运行install.php，安装数据库。
+4、后台管理员账号是teacher1,密码是wstx@123
+5、建议服务器为centos+apache+mysql
+6、学生端访问地址：index.html
+7、教师端访问地址是：teacher.html
